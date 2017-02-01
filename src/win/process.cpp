@@ -42,10 +42,6 @@ enum {
   SystemHandleInformationEx = 64,
 };
 
-enum {
-  ObjectNameInformation = 1,
-};
-
 struct SYSTEM_HANDLE_EX {
   PVOID Object;
   HANDLE ProcessId;  // @TODO: Is this supposed to be a DWORD or ULONG_PTR?
@@ -200,21 +196,6 @@ std::wstring GetObjectTypeName(HANDLE handle) {
       *reinterpret_cast<PUBLIC_OBJECT_TYPE_INFORMATION*>(buffer.get());
 
   return GetUnicodeString(type_information.TypeName);
-}
-
-std::wstring GetObjectName(HANDLE handle) {
-  const auto object_name_information =
-      static_cast<OBJECT_INFORMATION_CLASS>(ObjectNameInformation);
-  constexpr ULONG kSize = 0x1000;
-
-  const auto buffer = QueryObject(handle, object_name_information, kSize);
-  if (!buffer)
-    return std::wstring();
-
-  const auto& name_information =
-      *reinterpret_cast<UNICODE_STRING*>(buffer.get());
-
-  return GetUnicodeString(name_information);
 }
 
 std::wstring GetFinalPathNameByHandle(HANDLE handle) {
