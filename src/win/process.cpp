@@ -39,14 +39,14 @@ constexpr NTSTATUS STATUS_INFO_LENGTH_MISMATCH = 0xC0000004L;
 constexpr NTSTATUS STATUS_SUCCESS = 0x00000000L;
 
 enum {
-  SystemHandleInformationEx = 64,
+  SystemExtendedHandleInformation = 64,
 };
 
-struct SYSTEM_HANDLE_EX {
+struct SYSTEM_HANDLE_TABLE_ENTRY_INFO_EX {
   PVOID Object;
-  HANDLE ProcessId;  // @TODO: Is this supposed to be a DWORD or ULONG_PTR?
-  HANDLE Handle;
-  ULONG GrantedAccess;
+  ULONG_PTR UniqueProcessId;
+  HANDLE HandleValue;
+  ACCESS_MASK GrantedAccess;
   USHORT CreatorBackTraceIndex;
   USHORT ObjectTypeIndex;
   ULONG HandleAttributes;
@@ -54,12 +54,12 @@ struct SYSTEM_HANDLE_EX {
 };
 
 struct SYSTEM_HANDLE_INFORMATION_EX {
-  ULONG_PTR HandleCount;
+  ULONG_PTR NumberOfHandles;
   ULONG_PTR Reserved;
-  SYSTEM_HANDLE_EX Handles[1];
+  SYSTEM_HANDLE_TABLE_ENTRY_INFO_EX Handles[1];
 };
 
-struct PUBLIC_OBJECT_TYPE_INFORMATION {
+struct OBJECT_TYPE_INFORMATION {
   UNICODE_STRING TypeName;
   ULONG Reserved[22];
 };
@@ -175,7 +175,7 @@ HANDLE DuplicateHandle(HANDLE process_handle, HANDLE handle) {
 
 buffer_t GetSystemHandleInformation() {
   return QuerySystemInformation(
-      static_cast<SYSTEM_INFORMATION_CLASS>(SystemHandleInformationEx));
+      static_cast<SYSTEM_INFORMATION_CLASS>(SystemExtendedHandleInformation));
 }
 
 std::wstring GetUnicodeString(const UNICODE_STRING& unicode_string) {
@@ -188,12 +188,12 @@ std::wstring GetUnicodeString(const UNICODE_STRING& unicode_string) {
 
 std::wstring GetObjectTypeName(HANDLE handle) {
   const auto buffer = QueryObject(handle, ObjectTypeInformation,
-                                  sizeof(PUBLIC_OBJECT_TYPE_INFORMATION));
+                                  sizeof(OBJECT_TYPE_INFORMATION));
   if (!buffer)
     return std::wstring();
 
   const auto& type_information =
-      *reinterpret_cast<PUBLIC_OBJECT_TYPE_INFORMATION*>(buffer.get());
+      *reinterpret_cast<OBJECT_TYPE_INFORMATION*>(buffer.get());
 
   return GetUnicodeString(type_information.TypeName);
 }
@@ -292,16 +292,16 @@ bool EnumerateFiles(std::map<DWORD, std::vector<std::wstring>>& files) {
   const auto& system_handle_information =
       *reinterpret_cast<SYSTEM_HANDLE_INFORMATION_EX*>(
           system_handle_information_buffer.get());
-  if (!system_handle_information.HandleCount)
+  if (!system_handle_information.NumberOfHandles)
     return false;
 
   static auto file_type_index = GetFileTypeIndex();
 
-  for (size_t i = 0; i < system_handle_information.HandleCount; ++i) {
+  for (size_t i = 0; i < system_handle_information.NumberOfHandles; ++i) {
     const auto& handle = system_handle_information.Handles[i];
 
     // Skip if this handle does not belong to one of our PIDs
-    const auto process_id = reinterpret_cast<ULONG_PTR>(handle.ProcessId);
+    const auto process_id = static_cast<DWORD>(handle.UniqueProcessId);
     if (!process_handles.count(process_id))
       continue;
 
@@ -315,7 +315,7 @@ bool EnumerateFiles(std::map<DWORD, std::vector<std::wstring>>& files) {
 
     // Duplicate the handle so that we can query it
     const auto process_handle = process_handles[process_id].get();
-    Handle dup_handle(DuplicateHandle(process_handle, handle.Handle));
+    Handle dup_handle(DuplicateHandle(process_handle, handle.HandleValue));
     if (!dup_handle)
       continue;
 
