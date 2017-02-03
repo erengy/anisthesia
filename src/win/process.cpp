@@ -33,8 +33,6 @@ SOFTWARE.
 namespace anisthesia {
 namespace win {
 
-using buffer_t = std::unique_ptr<BYTE[]>;
-
 constexpr NTSTATUS STATUS_INFO_LENGTH_MISMATCH = 0xC0000004L;
 constexpr NTSTATUS STATUS_SUCCESS = 0x00000000L;
 
@@ -64,15 +62,13 @@ struct OBJECT_TYPE_INFORMATION {
   ULONG Reserved[22];
 };
 
+using buffer_t = std::unique_ptr<BYTE[]>;
+
 ////////////////////////////////////////////////////////////////////////////////
 
-PVOID GetLibraryProcAddress(LPCSTR module_name, LPCSTR proc_name) {
-  return reinterpret_cast<PVOID>(
-      GetProcAddress(GetModuleHandleA(module_name), proc_name));
-}
-
 PVOID GetNtProcAddress(LPCSTR proc_name) {
-  return GetLibraryProcAddress("ntdll.dll", proc_name);
+  return reinterpret_cast<PVOID>(
+      GetProcAddress(GetModuleHandleA("ntdll.dll"), proc_name));
 }
 
 NTSTATUS NtQuerySystemInformation(
@@ -168,8 +164,7 @@ HANDLE OpenProcess(DWORD process_id) {
 HANDLE DuplicateHandle(HANDLE process_handle, HANDLE handle) {
   HANDLE dup_handle = nullptr;
   const auto result = ::DuplicateHandle(process_handle, handle,
-                                        GetCurrentProcess(), &dup_handle,
-                                        0, false, DUPLICATE_SAME_ACCESS);
+      GetCurrentProcess(), &dup_handle, 0, false, DUPLICATE_SAME_ACCESS);
   return result ? dup_handle : nullptr;
 }
 
@@ -271,7 +266,7 @@ bool VerifyFileType(HANDLE handle) {
   return ::GetFileType(handle) == FILE_TYPE_DISK;
 }
 
-bool VerifyPathName(const std::wstring& path) {
+bool VerifyPath(const std::wstring& path) {
   if (path.empty())
     return false;
 
@@ -283,9 +278,9 @@ bool VerifyPathName(const std::wstring& path) {
     return false;
 
   // Skip invalid files, and directories
-  const auto file_attr = ::GetFileAttributes(path.c_str());
-  if ((file_attr == INVALID_FILE_ATTRIBUTES) ||
-      (file_attr & FILE_ATTRIBUTE_DIRECTORY)) {
+  const auto file_attributes = ::GetFileAttributes(path.c_str());
+  if ((file_attributes == INVALID_FILE_ATTRIBUTES) ||
+      (file_attributes & FILE_ATTRIBUTE_DIRECTORY)) {
     return false;
   }
 
@@ -344,7 +339,7 @@ bool EnumerateFiles(std::map<DWORD, std::vector<std::wstring>>& files) {
       continue;
 
     const auto path = GetFinalPathNameByHandle(dup_handle.get());
-    if (VerifyPathName(path))
+    if (VerifyPath(path))
       files[process_id].push_back(path);
   }
 
