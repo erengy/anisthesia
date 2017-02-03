@@ -125,7 +125,7 @@ bool VerifyWindowStyle(HWND hwnd) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-BOOL EnumerateWindowsProc(HWND hwnd, LPARAM param) {
+BOOL CALLBACK EnumerateWindowsProc(HWND hwnd, LPARAM param) {
   if (!VerifyWindowStyle(hwnd))
     return TRUE;
 
