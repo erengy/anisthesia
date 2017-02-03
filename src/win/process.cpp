@@ -33,10 +33,15 @@ SOFTWARE.
 namespace anisthesia {
 namespace win {
 
+// WARNING: This file uses internal Windows APIs. The functions and structures
+// that are defined here and in <winternl.h> are subject to change.
+
 constexpr NTSTATUS STATUS_INFO_LENGTH_MISMATCH = 0xC0000004L;
 constexpr NTSTATUS STATUS_SUCCESS = 0x00000000L;
 
 enum {
+  // SystemHandleInformation is limited to 16-bit process IDs, so we use
+  // SystemExtendedHandleInformation instead.
   SystemExtendedHandleInformation = 64,
 };
 
@@ -57,6 +62,9 @@ struct SYSTEM_HANDLE_INFORMATION_EX {
   SYSTEM_HANDLE_TABLE_ENTRY_INFO_EX Handles[1];
 };
 
+// This structure is defined as PUBLIC_OBJECT_TYPE_INFORMATION in Microsoft's
+// <winternl.h>, while it is defined as OBJECT_TYPE_INFORMATION in GCC's header
+// with actual data members instead of 'Reserved[22]'.
 struct OBJECT_TYPE_INFORMATION {
   UNICODE_STRING TypeName;
   ULONG Reserved[22];
@@ -67,6 +75,8 @@ using buffer_t = std::unique_ptr<BYTE[]>;
 ////////////////////////////////////////////////////////////////////////////////
 
 PVOID GetNtProcAddress(LPCSTR proc_name) {
+  // We have to use run-time dynamic linking, because there is no associated
+  // import library for the internal functions.
   return reinterpret_cast<PVOID>(
       GetProcAddress(GetModuleHandleA("ntdll.dll"), proc_name));
 }
@@ -158,6 +168,8 @@ buffer_t QueryObject(HANDLE handle,
 ////////////////////////////////////////////////////////////////////////////////
 
 HANDLE OpenProcess(DWORD process_id) {
+  // If we try to open a SYSTEM process, this function fails and the last error
+  // code is ERROR_ACCESS_DENIED.
   return ::OpenProcess(PROCESS_DUP_HANDLE, false, process_id);
 }
 
@@ -313,6 +325,8 @@ bool VerifyPath(const std::wstring& path) {
   return true;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
 bool EnumerateFiles(std::map<DWORD, std::vector<std::wstring>>& files) {
   std::map<DWORD, Handle> process_handles;
   for (const auto pair : files) {
@@ -346,7 +360,7 @@ bool EnumerateFiles(std::map<DWORD, std::vector<std::wstring>>& files) {
     if (!VerifyObjectType(nullptr, handle.ObjectTypeIndex))
       continue;
 
-    // Skip access masks that are known to cause trouble
+    // Skip if the file handle has an inappropriate access mask
     if (!VerifyAccessMask(handle.GrantedAccess))
       continue;
 

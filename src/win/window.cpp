@@ -53,6 +53,12 @@ DWORD GetWindowProcessId(HWND hwnd) {
 }
 
 std::wstring GetProcessFileName(DWORD process_id) {
+  // If we try to open a SYSTEM process, this function fails and the last error
+  // code is ERROR_ACCESS_DENIED.
+  //
+  // Note that if we requested PROCESS_QUERY_INFORMATION access right instead
+  // of PROCESS_QUERY_LIMITED_INFORMATION, this function would fail when used
+  // to open an elevated process.
   Handle process_handle(::OpenProcess(
       PROCESS_QUERY_LIMITED_INFORMATION, FALSE, process_id));
 
@@ -62,6 +68,8 @@ std::wstring GetProcessFileName(DWORD process_id) {
   DWORD buffer_size = MAX_PATH;
   WCHAR buffer[MAX_PATH];
 
+  // Note that this function requires Windows Vista or above. You may use
+  // GetProcessImageFileName or GetModuleFileNameEx on earlier versions.
   if (!::QueryFullProcessImageName(process_handle.get(), 0,
                                    buffer, &buffer_size)) {
     return std::wstring();
