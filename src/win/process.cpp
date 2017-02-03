@@ -220,7 +220,7 @@ std::wstring GetFinalPathNameByHandle(HANDLE handle) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-inline USHORT GetFileTypeIndex() {
+bool VerifyObjectType(HANDLE handle, USHORT object_type_index) {
   // File type index varies between OS versions:
   //
   // - 25: Windows Vista
@@ -229,9 +229,22 @@ inline USHORT GetFileTypeIndex() {
   // - 31: Windows 8, Windows 10
   // - 34: Windows 10 Anniversary Update
   //
-  // Here we return 0, so that the value is determined at run time. This is more
-  // reliable than hard-coding the values for each OS version.
-  return 0;
+  // Here we initialize the value with 0, so that it is determined at run time.
+  // This is more reliable than hard-coding the values for each OS version.
+  static USHORT file_type_index = 0;
+
+  if (file_type_index)
+    return object_type_index == file_type_index;
+
+  if (!handle)
+    return true;
+
+  if (GetObjectTypeName(handle) == L"File") {
+    file_type_index = object_type_index;
+    return true;
+  }
+
+  return false;
 }
 
 bool VerifyAccessMask(ULONG access_mask) {
@@ -295,8 +308,6 @@ bool EnumerateFiles(std::map<DWORD, std::vector<std::wstring>>& files) {
   if (!system_handle_information.NumberOfHandles)
     return false;
 
-  static auto file_type_index = GetFileTypeIndex();
-
   for (size_t i = 0; i < system_handle_information.NumberOfHandles; ++i) {
     const auto& handle = system_handle_information.Handles[i];
 
@@ -306,7 +317,7 @@ bool EnumerateFiles(std::map<DWORD, std::vector<std::wstring>>& files) {
       continue;
 
     // Skip if this is not a file handle
-    if (file_type_index && handle.ObjectTypeIndex != file_type_index)
+    if (!VerifyObjectType(nullptr, handle.ObjectTypeIndex))
       continue;
 
     // Skip access masks that are known to cause trouble
@@ -319,14 +330,9 @@ bool EnumerateFiles(std::map<DWORD, std::vector<std::wstring>>& files) {
     if (!dup_handle)
       continue;
 
-    // Determine file type index, for future reference
-    if (!file_type_index) {
-      if (GetObjectTypeName(dup_handle.get()) == L"File") {
-        file_type_index = handle.ObjectTypeIndex;
-      } else {
-        continue;
-      }
-    }
+    // Skip if this is not a file handle, while determining file type index
+    if (!VerifyObjectType(dup_handle.get(), handle.ObjectTypeIndex))
+      continue;
 
     // Skip if this is not a disk file (i.e. it is a character file, a socket,
     // a pipe, or a file of unknown type)
