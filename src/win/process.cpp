@@ -266,6 +266,11 @@ bool VerifyAccessMask(ULONG access_mask) {
   return true;
 }
 
+bool VerifyFileType(HANDLE handle) {
+  // Skip character files, sockets, pipes, and files of unknown type
+  return ::GetFileType(handle) == FILE_TYPE_DISK;
+}
+
 bool VerifyPathName(const std::wstring& path) {
   if (path.empty())
     return false;
@@ -334,9 +339,8 @@ bool EnumerateFiles(std::map<DWORD, std::vector<std::wstring>>& files) {
     if (!VerifyObjectType(dup_handle.get(), handle.ObjectTypeIndex))
       continue;
 
-    // Skip if this is not a disk file (i.e. it is a character file, a socket,
-    // a pipe, or a file of unknown type)
-    if (::GetFileType(dup_handle.get()) != FILE_TYPE_DISK)
+    // Skip if this is not a disk file
+    if (!VerifyFileType(dup_handle.get()))
       continue;
 
     const auto path = GetFinalPathNameByHandle(dup_handle.get());
