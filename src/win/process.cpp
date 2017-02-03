@@ -242,20 +242,46 @@ bool VerifyObjectType(HANDLE handle, USHORT object_type_index) {
   return false;
 }
 
-bool VerifyAccessMask(ULONG access_mask) {
-  // Skip access masks that may cause certain functions such as NtQueryObject
-  // and GetFinalPathNameByHandle to hang. These masks usually belong to named
-  // pipes.
-  switch (access_mask) {
-    case 0x00100000:  // SYNCHRONIZE access
-    case 0x0012008d:  // e.g. "\Device\NamedPipe\DropboxDataPipe"
-    case 0x00120189:
-    case 0x0012019f:
-    case 0x0016019f:  // e.g. "\Device\Afd\Endpoint"
-    case 0x001a019f:
-      return false;
-    default:
-      return true;
+bool VerifyAccessMask(ACCESS_MASK access_mask) {
+  // Certain kinds of handles, mostly those which refer to named pipes, cause
+  // some functions such as NtQueryObject and GetFinalPathNameByHandle to hang.
+  // By examining the access mask, we can get some clues about the object type
+  // and bail out if necessary.
+  //
+  // One method would be to hard-code individual masks that are known to cause
+  // trouble:
+  //
+  // - 0x00100000 (SYNCHRONIZE access)
+  // - 0x0012008d (e.g. "\Device\NamedPipe\DropboxDataPipe")
+  // - 0x00120189
+  // - 0x0012019f
+  // - 0x0016019f (e.g. "\Device\Afd\Endpoint")
+  // - 0x001a019f
+  //
+  // While this works in most situations, we occasionally end up skipping valid
+  // file handles. This method also requires updating the blacklist when we
+  // encounter other masks that cause our application to hang on users' end.
+  //
+  // The most common access mask for the valid files we are interested in is
+  // 0x00120089, which is made up of the following access rights:
+  //
+  // - 0x00000001 FILE_READ_DATA
+  // - 0x00000008 FILE_READ_EA
+  // - 0x00000080 FILE_READ_ATTRIBUTES
+  // - 0x00020000 READ_CONTROL
+  // - 0x00100000 SYNCHRONIZE
+  //
+  // Media players must have read-access in order to play a video file, so we
+  // can safely skip a handle in the abscence of this basic right:
+  if (!(access_mask & FILE_READ_DATA))
+    return false;
+
+  // We further assume that media players do not have any kind of write access
+  // to video files:
+  if ((access_mask & FILE_APPEND_DATA) ||
+      (access_mask & FILE_WRITE_EA) ||
+      (access_mask & FILE_WRITE_ATTRIBUTES)) {
+    return false;
   }
 
   return true;
