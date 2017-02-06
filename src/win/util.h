@@ -25,6 +25,7 @@ SOFTWARE.
 #pragma once
 
 #include <memory>
+#include <type_traits>
 
 #include <windows.h>
 
@@ -33,10 +34,22 @@ namespace win {
 
 struct HandleDeleter {
   using pointer = HANDLE;
-  void operator()(HANDLE handle) { ::CloseHandle(handle); }
+  void operator()(pointer p) const { ::CloseHandle(p); }
 };
 
 using Handle = std::unique_ptr<HANDLE, HandleDeleter>;
+
+////////////////////////////////////////////////////////////////////////////////
+
+template <typename T>
+struct ComInterfaceDeleter {
+  static_assert(std::is_base_of<IUnknown, T>::value, "Invalid COM interface");
+  using pointer = T*;
+  void operator()(pointer p) const { if (p) p->Release(); }
+};
+
+template <typename T>
+using ComInterface = std::unique_ptr<T, ComInterfaceDeleter<T>>;
 
 }  // namespace win
 }  // namespace anisthesia
