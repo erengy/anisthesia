@@ -28,7 +28,6 @@ SOFTWARE.
 #include <windows.h>
 #include <uiautomation.h>
 
-#include "../optional.h"
 #include "automation.h"
 #include "util.h"
 
@@ -40,9 +39,7 @@ namespace win {
 
 struct Options {
   long control_type_id = 0;
-  util::optional<bool> focusable;
-  util::optional<bool> offscreen;
-  util::optional<bool> read_only;
+  std::vector<std::pair<long, bool>> properties;
 };
 
 // Commonly used interfaces
@@ -189,21 +186,11 @@ Condition* BuildControlCondition(Element& element, const Options& options) {
   };
 
   add_scoped_condition(GetControlViewCondition());
-  // What kind of control is it?
   add_scoped_condition(CreateLongCondition(
         UIA_ControlTypePropertyId, options.control_type_id));
-  // Is it keyboard focusable?
-  if (options.focusable.has_value())
-    add_scoped_condition(CreateBoolCondition(
-        UIA_IsKeyboardFocusablePropertyId, options.focusable.value()));
-  // Is it offscreen?
-  if (options.offscreen.has_value())
-    add_scoped_condition(CreateBoolCondition(
-        UIA_IsOffscreenPropertyId, options.offscreen.value()));
-  // Does it have a read-only value?
-  if (options.read_only.has_value())
-    add_scoped_condition(CreateBoolCondition(
-        UIA_ValueIsReadOnlyPropertyId, options.read_only.value()));
+  for (const auto& property : options.properties) {
+    add_scoped_condition(CreateBoolCondition(property.first, property.second));
+  }
 
   if (scoped_conditions.empty())
     return nullptr;
@@ -228,8 +215,12 @@ bool FindAddressBar(Element& parent, WebBrowser& browser) {
   // address bar (e.g. the "Omnibox" on Chrome, the "Awesome Bar" on Firefox).
   Options options;
   options.control_type_id = UIA_EditControlTypeId;
-  options.focusable = true;
-  options.read_only = false;
+  options.properties = {
+    {UIA_IsEnabledPropertyId, true},
+    {UIA_IsKeyboardFocusablePropertyId, true},
+    {UIA_IsValuePatternAvailablePropertyId, true},
+    {UIA_ValueIsReadOnlyPropertyId, false},
+  };
   ComInterface<Element> element(
       FindFirstControl(parent, TreeScope_Descendants, options));
   if (!element)
@@ -247,7 +238,9 @@ bool FindAddressBar(Element& parent, WebBrowser& browser) {
 
 bool EnumerateTabs(Element& parent, WebBrowser& browser) {
   Options options;
-  options.read_only = true;
+  options.properties = {
+    {UIA_ValueIsReadOnlyPropertyId, true},
+  };
 
   // Find tab control, which contains the tab items
   options.control_type_id = UIA_TabControlTypeId;
