@@ -22,13 +22,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include <map>
 #include <memory>
 
 #include <windows.h>
 #include <winternl.h>
 
-#include "process.h"
-#include "util.h"
+#include "open_files.h"
+
+#include "../util.h"
 
 namespace anisthesia {
 namespace win {
@@ -309,10 +311,7 @@ bool VerifyPath(const std::wstring& path) {
     return false;
 
   // Skip files under system directories
-  // @TODO: Use %windir% environment variable
-  const std::wstring windir = L"C:\\Windows";
-  const size_t pos = path.find_first_not_of(L"\\?");
-  if (path.substr(pos, windir.size()) == windir)
+  if (IsSystemDirectory(path))
     return false;
 
   // Skip invalid files, and directories
@@ -327,10 +326,13 @@ bool VerifyPath(const std::wstring& path) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool EnumerateFiles(std::map<DWORD, std::vector<std::wstring>>& files) {
+bool EnumerateFiles(const std::set<DWORD>& process_ids,
+                    enum_files_proc_t enum_files_proc) {
+  if (!enum_files_proc)
+    return false;
+
   std::map<DWORD, Handle> process_handles;
-  for (const auto pair : files) {
-    const auto process_id = pair.first;
+  for (const auto& process_id : process_ids) {
     const auto handle = OpenProcess(process_id);
     if (handle)
       process_handles[process_id] = Handle(handle);
@@ -353,7 +355,7 @@ bool EnumerateFiles(std::map<DWORD, std::vector<std::wstring>>& files) {
 
     // Skip if this handle does not belong to one of our PIDs
     const auto process_id = static_cast<DWORD>(handle.UniqueProcessId);
-    if (!process_handles.count(process_id))
+    if (!process_ids.count(process_id))
       continue;
 
     // Skip if this is not a file handle
@@ -378,9 +380,15 @@ bool EnumerateFiles(std::map<DWORD, std::vector<std::wstring>>& files) {
     if (!VerifyFileType(dup_handle.get()))
       continue;
 
-    const auto path = GetFinalPathNameByHandle(dup_handle.get());
-    if (VerifyPath(path))
-      files[process_id].push_back(path);
+    OpenFile open_file;
+    open_file.process_id = process_id;
+    open_file.path = GetFinalPathNameByHandle(dup_handle.get());
+
+    if (!VerifyPath(open_file.path))
+      continue;
+
+    if (!enum_files_proc(open_file))
+      return false;
   }
 
   return true;

@@ -24,39 +24,24 @@ SOFTWARE.
 
 #pragma once
 
-#include <memory>
+#include <functional>
+#include <set>
 #include <string>
-#include <type_traits>
 
 #include <windows.h>
 
 namespace anisthesia {
 namespace win {
 
-struct HandleDeleter {
-  using pointer = HANDLE;
-  void operator()(pointer p) const { ::CloseHandle(p); }
+struct OpenFile {
+  DWORD process_id;
+  std::wstring path;
 };
 
-using Handle = std::unique_ptr<HANDLE, HandleDeleter>;
+using enum_files_proc_t = std::function<bool(const OpenFile&)>;
 
-////////////////////////////////////////////////////////////////////////////////
-// Alternative to Microsoft::WRL::ComPtr in <wrl/client.h>
-
-template <typename T>
-struct ComInterfaceDeleter {
-  static_assert(std::is_base_of<IUnknown, T>::value, "Invalid COM interface");
-  using pointer = T*;
-  void operator()(pointer p) const { if (p) p->Release(); }
-};
-
-template <typename T>
-using ComInterface = std::unique_ptr<T, ComInterfaceDeleter<T>>;
-
-////////////////////////////////////////////////////////////////////////////////
-
-std::wstring GetFileNameFromPath(const std::wstring& path);
-bool IsSystemDirectory(const std::wstring& path);
+bool EnumerateFiles(const std::set<DWORD>& process_ids,
+                    enum_files_proc_t enum_files_proc);
 
 }  // namespace win
 }  // namespace anisthesia

@@ -22,19 +22,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#pragma once
-
-#include <map>
 #include <string>
-#include <vector>
 
-#include <windows.h>
+#include "util.h"
 
 namespace anisthesia {
 namespace win {
 
-// Enumerates open files for given process IDs
-bool EnumerateFiles(std::map<DWORD, std::vector<std::wstring>>& files);
+std::wstring GetFileNameFromPath(const std::wstring& path) {
+  const auto pos = path.find_last_of(L"/\\");
+  return pos != std::wstring::npos ? path.substr(pos + 1) : path;
+}
+
+bool IsSystemDirectory(const std::wstring& path) {
+  // @TODO: Use %windir% environment variable
+  static const std::wstring windir = L"C:\\Windows";
+  const size_t pos = path.find_first_not_of(L"\\?");
+  return path.substr(pos, windir.size()) == windir;
+}
 
 }  // namespace win
 }  // namespace anisthesia

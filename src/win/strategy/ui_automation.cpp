@@ -28,8 +28,9 @@ SOFTWARE.
 #include <windows.h>
 #include <uiautomation.h>
 
-#include "automation.h"
-#include "util.h"
+#include "ui_automation.h"
+
+#include "../util.h"
 
 namespace anisthesia {
 namespace win {
@@ -242,7 +243,7 @@ bool EnumerateTabs(Element& parent, WebBrowser& browser) {
     {UIA_ValueIsReadOnlyPropertyId, true},
   };
 
-  // Find tab control, which contains the tab items
+  // Find the first tab control, which contains the tab items
   options.control_type_id = UIA_TabControlTypeId;
   ComInterface<Element> element_tab(
       FindFirstControl(parent, TreeScope_Descendants, options));
@@ -258,8 +259,8 @@ bool EnumerateTabs(Element& parent, WebBrowser& browser) {
     return false;
   const auto length = GetElementArrayLength(*element_array_tabs);
   for (int index = 0; index < length; ++index) {
-    // Note that releasing the element array does not release individual
-    // elements. Each element must be released to avoid leaking memory.
+    // Releasing the element array does not release individual elements. Each
+    // element must be released to avoid leaking memory.
     ComInterface<Element> element_tab_item(
         GetElementFromArray(*element_array_tabs, index));
     browser.tabs.push_back(GetElementName(*element_tab_item));

@@ -24,26 +24,34 @@ SOFTWARE.
 
 #include <set>
 #include <string>
-#include <vector>
 
 #include <windows.h>
 
-#include "util.h"
-#include "window.h"
+#include "window_title.h"
+
+#include "../util.h"
 
 namespace anisthesia {
 namespace win {
 
-std::wstring GetWindowClass(HWND hwnd) {
-  WCHAR buffer[MAX_PATH];
-  ::GetClassName(hwnd, buffer, MAX_PATH);
-  return buffer;
+std::wstring GetWindowClassName(HWND hwnd) {
+  // The maximum size for lpszClassName, according to the documentation of
+  // WNDCLASSEX structure
+  constexpr int kMaxSize = 256;
+
+  WCHAR buffer[kMaxSize];
+  const auto size = ::GetClassName(hwnd, buffer, kMaxSize);
+  return std::wstring(buffer, size);
 }
 
-std::wstring GetWindowTitle(HWND hwnd) {
-  WCHAR buffer[MAX_PATH];
-  ::GetWindowText(hwnd, buffer, MAX_PATH);
-  return buffer;
+std::wstring GetWindowText(HWND hwnd) {
+  // We could learn the actual size with GetWindowTextLength, but this arbitrary
+  // value suffices for our purpose.
+  constexpr int kMaxSize = 1024;
+
+  WCHAR buffer[kMaxSize];
+  const auto size = ::GetWindowText(hwnd, buffer, kMaxSize);
+  return std::wstring(buffer, size);
 }
 
 DWORD GetWindowProcessId(HWND hwnd) {
@@ -52,7 +60,7 @@ DWORD GetWindowProcessId(HWND hwnd) {
   return process_id;
 }
 
-std::wstring GetProcessFileName(DWORD process_id) {
+std::wstring GetProcessPath(DWORD process_id) {
   // If we try to open a SYSTEM process, this function fails and the last error
   // code is ERROR_ACCESS_DENIED.
   //
@@ -65,8 +73,8 @@ std::wstring GetProcessFileName(DWORD process_id) {
   if (!process_handle)
     return std::wstring();
 
-  DWORD buffer_size = MAX_PATH;
   WCHAR buffer[MAX_PATH];
+  DWORD buffer_size = MAX_PATH;
 
   // Note that this function requires Windows Vista or above. You may use
   // GetProcessImageFileName or GetModuleFileNameEx on earlier versions.
@@ -75,48 +83,10 @@ std::wstring GetProcessFileName(DWORD process_id) {
     return std::wstring();
   }
 
-  const auto result = std::wstring(buffer, buffer_size);
-  return result.substr(result.find_last_of(L"/\\") + 1);
+  return std::wstring(buffer, buffer_size);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-bool VerifyFileName(const std::wstring& name) {
-  static const std::set<std::wstring> invalid_names = {
-    // System files
-    L"explorer.exe",    // Windows Explorer
-    L"taskeng.exe",     // Task Scheduler Engine
-    L"taskhost.exe",    // Host Process for Windows Tasks
-    L"taskhostex.exe",  // Host Process for Windows Tasks
-    L"Taskmgr.exe",     // Task Manager
-
-    // These applications are very common and/or they have too many windows
-    L"Avira.Systray.exe",
-    L"CCC.exe",  // Catalyst Control Center
-    L"Photoshop.exe",
-    L"Spotify.exe",
-    L"Steam.exe",
-  };
-
-  return !name.empty() && !invalid_names.count(name);
-}
-
-bool VerifyWindowClass(const std::wstring& name) {
-  static const std::set<std::wstring> invalid_names = {
-    // System classes
-    L"#32770",         // Dialog box
-    L"CabinetWClass",  // Windows Explorer
-    L"ComboLBox",
-    L"DDEMLEvent",
-    L"DDEMLMom",
-    L"GDI+ Hook Window Class",
-    L"IME",
-    L"MSCTFIME UI",
-    L"tooltips_class32",
-  };
-
-  return !name.empty() && !invalid_names.count(name);
-}
 
 bool VerifyWindowStyle(HWND hwnd) {
   const auto window_ex_style = ::GetWindowLong(hwnd, GWL_EXSTYLE);
@@ -125,41 +95,88 @@ bool VerifyWindowStyle(HWND hwnd) {
     return (window_ex_style & ex_style) != 0;
   };
 
+  // Toolbars, tooltips and similar topmost windows
   if (has_ex_style(WS_EX_TOPMOST) && has_ex_style(WS_EX_TOOLWINDOW))
     return false;
 
   return true;
 }
 
+bool VerifyClassName(const std::wstring& name) {
+  static const std::set<std::wstring> invalid_names = {
+    // System classes
+    L"#32770",         // Dialog box
+    L"CabinetWClass",  // Windows Explorer
+    L"ComboLBox",
+    L"DDEMLEvent",
+    L"DDEMLMom",
+    L"DirectUIHWND",
+    L"GDI+ Hook Window Class",
+    L"IME",
+    L"Internet Explorer_Hidden",
+    L"MSCTFIME UI",
+    L"tooltips_class32",
+  };
+
+  return !name.empty() && !invalid_names.count(name);
+}
+
+bool VerifyProcessPath(const std::wstring& path) {
+  return !path.empty() && !IsSystemDirectory(path);
+}
+
+bool VerifyProcessFileName(const std::wstring& name) {
+  static const std::set<std::wstring> invalid_names = {
+    // System files
+    L"explorer.exe",    // Windows Explorer
+    L"taskeng.exe",     // Task Scheduler Engine
+    L"taskhost.exe",    // Host Process for Windows Tasks
+    L"taskhostex.exe",  // Host Process for Windows Tasks
+    L"Taskmgr.exe",     // Task Manager
+  };
+
+  return !name.empty() && !invalid_names.count(name);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
-BOOL CALLBACK EnumerateWindowsProc(HWND hwnd, LPARAM param) {
+BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM param) {
   if (!VerifyWindowStyle(hwnd))
     return TRUE;
 
   Window window;
   window.handle = hwnd;
   window.process_id = GetWindowProcessId(hwnd);
-  window.title = GetWindowTitle(hwnd);
+  window.text = GetWindowText(hwnd);
 
-  window.class_name = GetWindowClass(hwnd);
-  if (!VerifyWindowClass(window.class_name))
+  window.class_name = GetWindowClassName(hwnd);
+  if (!VerifyClassName(window.class_name))
     return TRUE;
 
-  window.file_name = GetProcessFileName(window.process_id);
-  if (!VerifyFileName(window.file_name))
+  const auto process_path = GetProcessPath(window.process_id);
+  if (!VerifyProcessPath(process_path))
     return TRUE;
 
-  auto& windows = *reinterpret_cast<std::vector<Window>*>(param);
-  windows.push_back(window);
+  window.process_file_name = GetFileNameFromPath(process_path);
+  if (!VerifyProcessFileName(window.process_file_name))
+    return TRUE;
+
+  auto& enum_windows_proc = *reinterpret_cast<enum_windows_proc_t*>(param);
+  if (!enum_windows_proc(window))
+    return FALSE;
 
   return TRUE;
 }
 
-bool EnumerateWindows(std::vector<Window>& windows) {
-  const auto result = ::EnumWindows(
-      EnumerateWindowsProc, reinterpret_cast<LPARAM>(&windows));
-  return result != FALSE;
+bool EnumerateWindows(enum_windows_proc_t enum_windows_proc) {
+  if (!enum_windows_proc)
+    return false;
+
+  const auto param = reinterpret_cast<LPARAM>(&enum_windows_proc);
+
+  // Note that EnumWindows enumerates only top-level windows of desktop apps
+  // (as opposed to UWP apps) on Windows 8 and above.
+  return ::EnumWindows(EnumWindowsProc, param) != FALSE;
 }
 
 }  // namespace win

@@ -24,8 +24,8 @@ SOFTWARE.
 
 #pragma once
 
+#include <functional>
 #include <string>
-#include <vector>
 
 #include <windows.h>
 
@@ -36,12 +36,13 @@ struct Window {
   HWND handle = nullptr;
   DWORD process_id = 0;
   std::wstring class_name;
-  std::wstring file_name;
-  std::wstring title;
+  std::wstring process_file_name;
+  std::wstring text;
 };
 
-// Enumerates top-level windows
-bool EnumerateWindows(std::vector<Window>& windows);
+using enum_windows_proc_t = std::function<bool(const Window&)>;
+
+bool EnumerateWindows(enum_windows_proc_t enum_windows_proc);
 
 }  // namespace win
 }  // namespace anisthesia
