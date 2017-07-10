@@ -1,0 +1,33 @@
+%YAML 1.2
+---
+name: Anisthesia
+file_extensions: [anisthesia]
+scope: text.anisthesia
+
+contexts:
+  main:
+    - include: comments
+    - include: keywords
+    - include: player
+    - include: strategies
+    - include: string
+
+  comments:
+    - match: ^\t*#.*\n
+      scope: comment.anisthesia
+
+  keywords:
+    - match: ^\t+(executables|strategies|windows):?\n
+      scope: keyword.anisthesia
+
+  player:
+    - match: ^[^\s].+\n
+      scope: markup.heading.player.anisthesia
+
+  strategies:
+    - match: ^\t+(open_files|ui_automation|window_title):?\n
+      scope: constant.strategy.anisthesia
+
+  string:
+    - match: ^\t+\^?(.+)\n
+      scope: string.anisthesia

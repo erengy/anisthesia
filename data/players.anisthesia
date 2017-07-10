@@ -1,0 +1,366 @@
+# This file includes media player data for Anisthesia. It is used to detect
+# running players and retrieve information about current media.
+#
+# Please read before editing this file:
+# - Indentation is significant. You must use tabs rather than spaces.
+# - Regular expressions begin with a '^' character.
+#
+# The latest version of this file can be found at:
+# <https://github.com/erengy/anisthesia>
+#
+# This file is in the public domain.
+
+ACE Player HD (VLC)
+	windows:
+		QWidget
+	executables:
+		ace_player
+	strategies:
+		window_title:
+			^(.*) - Ace Player HD
+
+ALLPlayer
+	windows:
+		TApplication
+	executables:
+		ALLPlayer
+	strategies:
+		open_files
+
+Baka MPlayer
+	windows:
+		Qt5QWindowIcon
+	executables:
+		Baka MPlayer
+	strategies:
+		window_title:
+			^(.*)
+
+BESTplayer
+	windows:
+		TBESTplayerApp.UnicodeClass
+	executables:
+		BESTplayer
+	strategies:
+		window_title:
+			^(.*) - BESTplayer
+
+Bomi Player
+	windows:
+		Qt5QWindowGLOwnDCIcon
+	executables:
+		bomi
+	strategies:
+		window_title:
+			^(.*) - bomi
+
+BSPlayer
+	windows:
+		BSPlayer
+	executables:
+		bsplayer
+	strategies:
+		# @TODO: BSPlayer API
+		open_files
+
+DivX Player
+	windows:
+		QWidget
+	executables:
+		DivX Player
+		DivX Plus Player
+	strategies:
+		open_files
+
+GOM Player
+	windows:
+		GomPlayer1.x
+	executables:
+		GOM
+	strategies:
+		window_title:
+			[Built-in subtitle] GOM Player
+
+Kantaris Media Player
+	windows:
+		WindowsForms10.Window.20008.app.0.378734a
+	executables:
+		Kantaris
+		KantarisMain
+	strategies:
+		open_files
+
+KMPlayer
+	windows:
+		# @TODO: Invisible?
+		KMPlayer v3.x
+		Winamp v1.x
+	executables:
+		KMPlayer
+	strategies:
+		open_files
+
+Kodi (XBMC)
+	windows:
+		Kodi
+		XBMC
+	executables:
+		Kodi
+		XBMC
+	strategies:
+		open_files
+
+Light Alloy
+	windows:
+		LightAlloyFront
+	executables:
+		LA
+	strategies:
+		window_title:
+			^(.*) - Light Alloy
+
+Media Player Classic
+	windows:
+		MediaPlayerClassicW
+	executables:
+		mplayerc
+		mplayerc64
+	strategies:
+		window_title:
+			^(.*) - Media Player Classic
+
+MPC-HC
+	windows:
+		MediaPlayerClassicW
+	executables:
+		mpc-hc
+		mpc-hc64
+		# Some codec installers append "_nvo" to the filename, if NVIDIA Optimus
+		# is present on the system. Similarly, various guides recommend
+		# appending "-gpu", etc. in order to fix some GPU-related issues.
+		^mpc-hc.+
+		# LAV Filters Megamix
+		iris
+	strategies:
+		open_files
+		# Must be enabled from: Options -> Player -> Title bar
+		window_title:
+			^(.*)(?:(?: - )?(?:Media Player Classic(?: Home Cinema)?|(?:MPC-HC)))?
+
+Media Player Classic - BE
+	windows:
+		MediaPlayerClassicW
+		MPC-BE
+	executables:
+		mpc-be
+		mpc-be64
+	strategies:
+		window_title:
+			^(.*) - MPC-BE
+
+Miro
+	windows:
+		gdkWindowToplevel
+	executables:
+		Miro
+	strategies:
+		open_files
+
+MPCSTAR
+	windows:
+		wxWindowClassNR
+	executables:
+		mpcstar
+	strategies:
+		window_title:
+			^(.*) - MPCSTAR
+
+MPDN
+	windows:
+		# @TODO: Invisible?
+		FilterGraphWindow
+		VsyncWindowClass
+	executables:
+		MediaPlayerDotNet
+	strategies:
+		open_files
+		window_title:
+			^(.*) - MPDN
+
+mpv
+	windows:
+		mpv
+	executables:
+		mpv
+	strategies:
+		open_files
+		window_title:
+			^(?:mpv - )?(.*)(?: - mpv)?
+
+MV2Player
+	windows:
+		TApplication
+	executables:
+		Mv2Player
+		Mv2PlayerPlus
+	strategies:
+		window_title:
+			MV2 Player
+
+PotPlayer
+	windows:
+		PotPlayer
+		PotPlayer64
+	executables:
+		PotPlayer
+		PotPlayer64
+		PotPlayerMini
+		PotPlayerMini64
+		# LAV Filters Megamix
+		sumire
+	strategies:
+		open_files
+
+SMPlayer
+	windows:
+		QWidget
+	executables:
+		smplayer
+		smplayer2
+	strategies:
+		window_title:
+			^(.*) - SMPlayer
+
+Splash Lite
+	windows:
+		DX_DISPLAY0
+	executables:
+		SplashLite
+	strategies:
+		open_files
+
+SPlayer
+	windows:
+		MediaPlayerClassicW
+	executables:
+		splayer
+	strategies:
+		window_title:
+			[GPU Accel+EVR] SPlayer
+
+UMPlayer
+	windows:
+		QWidget
+	executables:
+		umplayer
+	strategies:
+		# @TODO: MPlayer
+		open_files
+
+VLC media player
+	windows:
+		QWidget
+		# Nightly builds for version 3.0.0
+		Qt5QWindowIcon
+		# Skinnable interface
+		SkinWindowClass
+		# @TODO: Is this still used?
+		VLC DirectX
+	executables:
+		vlc
+	strategies:
+		open_files
+		# Must be enabled from: Advanced Preferences -> Interface -> Main
+		# interfaces -> Qt -> Show playing item name in window title
+		window_title:
+			^(.*) - VLC media player
+
+WebTorrent
+	windows:
+		Chrome_WidgetWin_1
+	executables:
+		WebTorrent
+	strategies:
+		window_title:
+			^(.*)
+
+Winamp
+	windows:
+		Winamp v1.x
+	executables:
+		winamp
+	strategies:
+		# @TODO: Winamp API
+		open_files
+
+Windows Media Center
+	windows:
+		eHome Render Window
+	executables:
+		ehshell
+	strategies:
+		open_files
+
+Windows Media Player
+	windows:
+		WMPlayerApp
+		WMP Skin Host
+	executables:
+		wmplayer
+	strategies:
+		open_files
+
+Zoom Player
+	windows:
+		# @TODO: Invisible?
+		TApplication
+	executables:
+		zplayer
+	strategies:
+		window_title:
+			^(.*) - Zoom Player
+
+################################################################################
+# Web browsers
+
+Google Chrome
+	windows:
+		Chrome_WidgetWin_1
+	executables:
+		chrome
+	strategies:
+		ui_automation
+		window_title:
+			^(.*) - Google Chrome
+
+Microsoft Edge
+	windows:
+		Windows.UI.Core.CoreWindow
+	executables:
+		MicrosoftEdge
+	strategies:
+		ui_automation
+		window_title:
+			^(.*) - Microsoft Edge
+
+Mozilla Firefox
+	windows:
+		MozillaUIWindowClass
+		MozillaWindowClass
+	executables:
+		firefox
+	strategies:
+		ui_automation
+		window_title:
+			^(.*) - (?:Mozilla )?Firefox(?: Developer Edition)?
+
+Opera
+	windows:
+		Chrome_WidgetWin_0
+		Chrome_WidgetWin_1
+	executables:
+		opera
+	strategies:
+		ui_automation
+		window_title:
+			^(.*) - Opera
