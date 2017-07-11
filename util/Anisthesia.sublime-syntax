@@ -10,6 +10,7 @@ contexts:
     - include: keywords
     - include: player
     - include: strategies
+    - include: type
     - include: string
 
   comments:
@@ -17,7 +18,7 @@ contexts:
       scope: comment.anisthesia
 
   keywords:
-    - match: ^\t+(executables|strategies|windows):?\n
+    - match: ^\t+(executables|strategies|type|windows):?\n
       scope: keyword.anisthesia
 
   player:
@@ -27,6 +28,10 @@ contexts:
   strategies:
     - match: ^\t+(open_files|ui_automation|window_title):?\n
       scope: constant.strategy.anisthesia
+
+  type:
+    - match: ^\t+(default|web_browser)\n
+      scope: constant.type.anisthesia
 
   string:
     - match: ^\t+\^?(.+)\n

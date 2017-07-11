@@ -332,6 +332,8 @@ Google Chrome
 		ui_automation
 		window_title:
 			^(.*) - Google Chrome
+	type:
+		web_browser
 
 Microsoft Edge
 	windows:
@@ -342,6 +344,8 @@ Microsoft Edge
 		ui_automation
 		window_title:
 			^(.*) - Microsoft Edge
+	type:
+		web_browser
 
 Mozilla Firefox
 	windows:
@@ -353,6 +357,8 @@ Mozilla Firefox
 		ui_automation
 		window_title:
 			^(.*) - (?:Mozilla )?Firefox(?: Developer Edition)?
+	type:
+		web_browser
 
 Opera
 	windows:
@@ -364,3 +370,5 @@ Opera
 		ui_automation
 		window_title:
 			^(.*) - Opera
+	type:
+		web_browser

@@ -39,6 +39,7 @@ enum class State {
   ExpectWindow,
   ExpectExecutable,
   ExpectStrategy,
+  ExpectType,
   ExpectWindowTitle,
 };
 
@@ -61,6 +62,7 @@ bool HandleIndentation(const std::string& line,
       case State::ExpectWindow:
       case State::ExpectExecutable:
       case State::ExpectStrategy:
+      case State::ExpectType:
         return 2;
       case State::ExpectWindowTitle:
         return 3;
@@ -90,6 +92,9 @@ bool HandleIndentation(const std::string& line,
           return false;
         fix_state();
         break;
+      case State::ExpectType:
+        fix_state();
+        break;
       case State::ExpectWindowTitle:
         return false;
     }
@@ -110,6 +115,7 @@ bool HandleState(std::string& line, std::vector<Player>& players, State& state) 
         {"windows", State::ExpectWindow},
         {"executables", State::ExpectExecutable},
         {"strategies", State::ExpectStrategy},
+        {"type", State::ExpectType},
       };
       util::TrimRight(line, ":");
       const auto it = sections.find(line);
@@ -144,6 +150,18 @@ bool HandleState(std::string& line, std::vector<Player>& players, State& state) 
           state = State::ExpectWindowTitle;
           break;
       }
+      break;
+    }
+
+    case State::ExpectType: {
+      static const std::map<std::string, PlayerType> types = {
+        {"default", PlayerType::Default},
+        {"web_browser", PlayerType::WebBrowser},
+      };
+      const auto it = types.find(line);
+      if (it == types.end())
+        return false;
+      players.back().type = it->second;
       break;
     }
 

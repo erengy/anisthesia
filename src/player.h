@@ -45,16 +45,14 @@ public:
   Player() {}
   Player(const std::string& name) : name(name) {}
 
+  PlayerType type = PlayerType::Default;
+
   std::string name;
+  std::string window_title_format;
 
   std::vector<std::string> windows;
   std::vector<std::string> executables;
   std::vector<Strategy> strategies;
-
-  std::string window_title_format;
-
-private:
-  PlayerType type_ = PlayerType::Default;
 };
 
 bool ParsePlayersData(const std::string& path, std::vector<Player>& players);
