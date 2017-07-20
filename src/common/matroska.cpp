@@ -109,7 +109,7 @@ bool ReadInfoFromFile(const std::string& path, Info& info) {
 
   // Determine file size
   file.seekg(0, std::ios::end);
-  const size_t file_size = file.tellg();
+  const auto file_size = static_cast<size_t>(file.tellg());
   file.seekg(0, std::ios::beg);
 
   // Check EBML header
