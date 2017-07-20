@@ -141,6 +141,9 @@ bool VerifyProcessFileName(const std::wstring& name) {
 ////////////////////////////////////////////////////////////////////////////////
 
 BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM param) {
+  if (!::IsWindowVisible(hwnd))
+    return TRUE;
+
   if (!VerifyWindowStyle(hwnd))
     return TRUE;
 
