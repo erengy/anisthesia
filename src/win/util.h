@@ -56,6 +56,7 @@ using ComInterface = std::unique_ptr<T, ComInterfaceDeleter<T>>;
 ////////////////////////////////////////////////////////////////////////////////
 
 std::wstring GetFileNameFromPath(const std::wstring& path);
+std::wstring GetFileNameWithoutExtension(const std::wstring& filename);
 bool IsSystemDirectory(const std::wstring& path);
 
 }  // namespace win

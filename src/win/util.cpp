@@ -34,6 +34,11 @@ std::wstring GetFileNameFromPath(const std::wstring& path) {
   return pos != std::wstring::npos ? path.substr(pos + 1) : path;
 }
 
+std::wstring GetFileNameWithoutExtension(const std::wstring& filename) {
+  const auto pos = filename.find_last_of(L".");
+  return pos != std::wstring::npos ? filename.substr(0, pos) : filename;
+}
+
 bool IsSystemDirectory(const std::wstring& path) {
   // @TODO: Use %windir% environment variable
   static const std::wstring windir = L"C:\\Windows";

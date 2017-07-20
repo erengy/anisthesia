@@ -128,11 +128,11 @@ bool VerifyProcessPath(const std::wstring& path) {
 bool VerifyProcessFileName(const std::wstring& name) {
   static const std::set<std::wstring> invalid_names = {
     // System files
-    L"explorer.exe",    // Windows Explorer
-    L"taskeng.exe",     // Task Scheduler Engine
-    L"taskhost.exe",    // Host Process for Windows Tasks
-    L"taskhostex.exe",  // Host Process for Windows Tasks
-    L"Taskmgr.exe",     // Task Manager
+    L"explorer",    // Windows Explorer
+    L"taskeng",     // Task Scheduler Engine
+    L"taskhost",    // Host Process for Windows Tasks
+    L"taskhostex",  // Host Process for Windows Tasks
+    L"Taskmgr",     // Task Manager
   };
 
   return !name.empty() && !invalid_names.count(name);
@@ -157,7 +157,8 @@ BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM param) {
   if (!VerifyProcessPath(process_path))
     return TRUE;
 
-  window.process_file_name = GetFileNameFromPath(process_path);
+  window.process_file_name = GetFileNameWithoutExtension(
+      GetFileNameFromPath(process_path));
   if (!VerifyProcessFileName(window.process_file_name))
     return TRUE;
 
