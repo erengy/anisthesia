@@ -24,32 +24,14 @@ SOFTWARE.
 
 #pragma once
 
-#include <string>
 #include <vector>
-
-#include <windows.h>
-
-#include "../media.h"
-#include "../player.h"
 
 namespace anisthesia {
 namespace win {
 
-struct Window {
-  HWND handle = nullptr;
-  DWORD process_id = 0;
-  std::wstring class_name;
-  std::wstring process_file_name;
-  std::wstring text;
-};
+struct Result;
 
-struct Result {
-  const Player player;
-  const Window window;
-  std::vector<Media> media;
-};
-
-bool IsPlayerWindow(const Window& window, const Player& player);
+bool ApplyStrategies(std::vector<Result>& results);
 
 }  // namespace win
 }  // namespace anisthesia
