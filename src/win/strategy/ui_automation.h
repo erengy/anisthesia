@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -30,13 +31,16 @@ SOFTWARE.
 namespace anisthesia {
 namespace win {
 
-struct WebBrowser {
-  std::wstring address;
-  std::wstring title;
-  std::vector<std::wstring> tabs;
+enum class WebBrowserInformationType {
+  Address,
+  Tab,
+  Title,
 };
 
-bool GetWebBrowserInformation(HWND hwnd, WebBrowser& browser);
+using web_browser_information_proc_t =
+    std::function<bool(WebBrowserInformationType, const std::wstring&)>;
+
+bool GetWebBrowserInformation(HWND hwnd, web_browser_information_proc_t proc);
 
 }  // namespace win
 }  // namespace anisthesia

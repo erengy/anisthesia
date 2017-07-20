@@ -211,7 +211,7 @@ Condition* BuildControlCondition(Element& element, const Options& options) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool FindAddressBar(Element& parent, WebBrowser& browser) {
+bool FindAddressBar(Element& parent, std::wstring& address) {
   // Here we assume that the first edit control that fits our options is the
   // address bar (e.g. the "Omnibox" on Chrome, the "Awesome Bar" on Firefox).
   Options options;
@@ -232,12 +232,12 @@ bool FindAddressBar(Element& parent, WebBrowser& browser) {
   // can change depending on the browser language. However, we are only
   // interested in the element value, which usually gives us the URL of the
   // current page.
-  browser.address = GetElementValue(*element);
+  address = GetElementValue(*element);
 
   return true;
 }
 
-bool EnumerateTabs(Element& parent, WebBrowser& browser) {
+bool EnumerateTabs(Element& parent, std::vector<std::wstring>& tabs) {
   Options options;
   options.properties = {
     {UIA_ValueIsReadOnlyPropertyId, true},
@@ -263,7 +263,7 @@ bool EnumerateTabs(Element& parent, WebBrowser& browser) {
     // element must be released to avoid leaking memory.
     ComInterface<Element> element_tab_item(
         GetElementFromArray(*element_array_tabs, index));
-    browser.tabs.push_back(GetElementName(*element_tab_item));
+    tabs.push_back(GetElementName(*element_tab_item));
   }
 
   return true;
@@ -271,7 +271,7 @@ bool EnumerateTabs(Element& parent, WebBrowser& browser) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool GetWebBrowserInformation(HWND hwnd, WebBrowser& browser) {
+bool GetWebBrowserInformation(HWND hwnd, web_browser_information_proc_t proc) {
   if (!InitializeUIAutomation())
     return false;
 
@@ -279,9 +279,22 @@ bool GetWebBrowserInformation(HWND hwnd, WebBrowser& browser) {
   if (!parent)
     return false;
 
-  browser.title = GetElementName(*parent);
-  FindAddressBar(*parent, browser);
-  EnumerateTabs(*parent, browser);
+  const std::wstring title = GetElementName(*parent);
+  if (!proc(WebBrowserInformationType::Title, title))
+    return false;
+
+  std::wstring address;
+  if (!FindAddressBar(*parent, address) ||
+      !proc(WebBrowserInformationType::Address, address)) {
+    return false;
+  }
+
+  std::vector<std::wstring> tabs;
+  EnumerateTabs(*parent, tabs);
+  for (const auto& tab : tabs) {
+    if (!proc(WebBrowserInformationType::Tab, tab))
+      return false;
+  }
 
   return true;
 }
