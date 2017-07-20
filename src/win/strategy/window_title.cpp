@@ -29,6 +29,7 @@ SOFTWARE.
 
 #include "window_title.h"
 
+#include "../platform.h"
 #include "../util.h"
 
 namespace anisthesia {

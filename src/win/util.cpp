@@ -24,6 +24,8 @@ SOFTWARE.
 
 #include <string>
 
+#include <windows.h>
+
 #include "util.h"
 
 namespace anisthesia {
@@ -44,6 +46,24 @@ bool IsSystemDirectory(const std::wstring& path) {
   static const std::wstring windir = L"C:\\Windows";
   const size_t pos = path.find_first_not_of(L"\\?");
   return path.substr(pos, windir.size()) == windir;
+}
+
+std::string ToUtf8String(const std::wstring& str) {
+  auto wide_char_to_multi_byte = [&str](LPSTR output, int size) -> int {
+    return ::WideCharToMultiByte(CP_UTF8, 0, str.c_str(), str.size(),
+                                 output, size, nullptr, nullptr);
+  };
+
+  if (!str.empty()) {
+    const auto size = wide_char_to_multi_byte(nullptr, 0);
+    if (size > 0) {
+      std::string output(size, '\0');
+      wide_char_to_multi_byte(&output.front(), size);
+      return output;
+    }
+  }
+
+  return std::string();
 }
 
 }  // namespace win

@@ -32,13 +32,7 @@ SOFTWARE.
 namespace anisthesia {
 namespace win {
 
-struct Window {
-  HWND handle = nullptr;
-  DWORD process_id = 0;
-  std::wstring class_name;
-  std::wstring process_file_name;
-  std::wstring text;
-};
+struct Window;
 
 using enum_windows_proc_t = std::function<bool(const Window&)>;
 

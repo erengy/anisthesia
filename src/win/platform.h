@@ -25,15 +25,24 @@ SOFTWARE.
 #pragma once
 
 #include <string>
+#include <vector>
+
+#include <windows.h>
+
+#include "../player.h"
 
 namespace anisthesia {
-namespace util {
+namespace win {
 
-bool ReadFile(const std::string& path, std::string& data);
+struct Window {
+  HWND handle = nullptr;
+  DWORD process_id = 0;
+  std::wstring class_name;
+  std::wstring process_file_name;
+  std::wstring text;
+};
 
-bool EqualStrings(const std::string& str1, const std::string& str2);
-bool TrimLeft(std::string& str, const char* chars);
-bool TrimRight(std::string& str, const char* chars);
+bool IsPlayerWindow(const Window& window, const Player& player);
 
-}  // namespace util
+}  // namespace win
 }  // namespace anisthesia

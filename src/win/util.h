@@ -59,5 +59,7 @@ std::wstring GetFileNameFromPath(const std::wstring& path);
 std::wstring GetFileNameWithoutExtension(const std::wstring& filename);
 bool IsSystemDirectory(const std::wstring& path);
 
+std::string ToUtf8String(const std::wstring& str);
+
 }  // namespace win
 }  // namespace anisthesia

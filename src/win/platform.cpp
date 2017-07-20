@@ -22,18 +22,44 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#pragma once
-
+#include <regex>
 #include <string>
 
+#include "platform.h"
+#include "util.h"
+
+#include "../util.h"
+
 namespace anisthesia {
-namespace util {
+namespace win {
 
-bool ReadFile(const std::string& path, std::string& data);
+bool IsPlayerWindow(const Window& window, const Player& player) {
+  auto check_pattern = [](const std::string& pattern, const std::string& str) {
+    if (pattern.empty())
+      return false;
+    if (pattern.front() == '^' && std::regex_match(str, std::regex(pattern)))
+      return true;
+    return util::EqualStrings(pattern, str);
+  };
 
-bool EqualStrings(const std::string& str1, const std::string& str2);
-bool TrimLeft(std::string& str, const char* chars);
-bool TrimRight(std::string& str, const char* chars);
+  auto check_windows = [&]() {
+    for (const auto& pattern : player.windows) {
+      if (check_pattern(pattern, ToUtf8String(window.class_name)))
+        return true;
+    }
+    return false;
+  };
 
-}  // namespace util
+  auto check_executables = [&]() {
+    for (const auto& pattern : player.executables) {
+      if (check_pattern(pattern, ToUtf8String(window.process_file_name)))
+        return true;
+    }
+    return false;
+  };
+
+  return check_windows() && check_executables();
+}
+
+}  // namespace win
 }  // namespace anisthesia
