@@ -40,16 +40,10 @@ enum class PlayerType {
   WebBrowser,
 };
 
-class Player {
-public:
-  Player() {}
-  Player(const std::string& name) : name(name) {}
-
+struct Player {
   PlayerType type = PlayerType::Default;
-
   std::string name;
   std::string window_title_format;
-
   std::vector<std::string> windows;
   std::vector<std::string> executables;
   std::vector<Strategy> strategies;

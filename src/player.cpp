@@ -106,7 +106,8 @@ bool HandleIndentation(const std::string& line,
 bool HandleState(std::string& line, std::vector<Player>& players, State& state) {
   switch (state) {
     case State::ExpectPlayerName:
-      players.push_back(Player{line});
+      players.push_back(Player());
+      players.back().name = line;
       state = State::ExpectSection;
       break;
 
