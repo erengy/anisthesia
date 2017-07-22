@@ -25,6 +25,7 @@ SOFTWARE.
 #pragma once
 
 #include <chrono>
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -57,5 +58,7 @@ struct Media {
   media_time_t position;
   std::vector<MediaInformation> information;
 };
+
+using media_proc_t = std::function<bool(const MediaInformation&)>;
 
 }  // namespace anisthesia

@@ -24,99 +24,49 @@ SOFTWARE.
 
 #include <regex>
 
-#include "platform.h"
-#include "strategies.h"
-#include "util.h"
-
-#include "strategy/open_files.h"
-#include "strategy/ui_automation.h"
-#include "strategy/window_title.h"
-
 #include "../media.h"
+
+#include "open_files.h"
+#include "platform.h"
+#include "ui_automation.h"
+#include "util.h"
 
 namespace anisthesia {
 namespace win {
 
-bool AddMedia(MediaInformationType type, const std::string& value,
-              Result& result) {
-  if (value.empty())
-    return false;
+class Strategist {
+public:
+  Strategist(Result& result, media_proc_t media_proc)
+      : result_(result), media_proc_(media_proc) {}
 
-  switch (type) {
-    case MediaInformationType::File:
-      // @TODO: Callback function to verify file
-      break;
-  }
+  bool ApplyStrategies();
 
-  Media media;
-  media.information.push_back({type, value});
-  result.media.push_back(std::move(media));
+private:
+  bool AddMedia(const MediaInformation media_information);
 
-  return true;
-}
+  bool ApplyWindowTitleStrategy();
+  bool ApplyOpenFilesStrategy();
+  bool ApplyUiAutomationStrategy();
 
-////////////////////////////////////////////////////////////////////////////////
-
-bool ApplyWindowTitleStrategy(Result& result) {
-  auto title = ToUtf8String(result.window.text);
-
-  if (!result.player.window_title_format.empty()) {
-    const std::regex pattern(result.player.window_title_format);
-    std::smatch match;
-    std::regex_match(title, match, pattern);
-
-    if (match.size() >= 2)
-      title = match[1].str();
-  }
-
-  return AddMedia(MediaInformationType::Unknown, title, result);
-}
-
-bool ApplyOpenFilesStrategy(Result& result) {
-  const std::set<DWORD> process_ids{result.window.process_id};
-
-  enum_files_proc_t proc = [&result](const OpenFile& open_file) -> bool {
-    AddMedia(MediaInformationType::File, ToUtf8String(open_file.path), result);
-    return true;
-  };
-
-  return EnumerateFiles(process_ids, proc);
-}
-
-bool ApplyUiAutomationStrategy(Result& result) {
-  web_browser_information_proc_t proc = [&result](
-      WebBrowserInformationType type, const std::wstring& str) -> bool {
-    switch (type) {
-      case WebBrowserInformationType::Address:
-        if (!AddMedia(MediaInformationType::Url, ToUtf8String(str), result))
-          return false;
-        break;
-      case WebBrowserInformationType::Title:
-      case WebBrowserInformationType::Tab:
-        AddMedia(MediaInformationType::Title, ToUtf8String(str), result);
-        break;
-    }
-    return true;
-  };
-
-  return GetWebBrowserInformation(result.window.handle, proc);
-}
+  media_proc_t media_proc_;
+  Result& result_;
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool ApplyStrategies(Result& result) {
-  for (const auto strategy : result.player.strategies) {
+bool Strategist::ApplyStrategies() {
+  for (const auto strategy : result_.player.strategies) {
     switch (strategy) {
       case Strategy::WindowTitle:
-        if (ApplyWindowTitleStrategy(result))
+        if (ApplyWindowTitleStrategy())
           return true;
         break;
       case Strategy::OpenFiles:
-        if (ApplyOpenFilesStrategy(result))
+        if (ApplyOpenFilesStrategy())
           return true;
         break;
       case Strategy::UiAutomation:
-        if (ApplyUiAutomationStrategy(result))
+        if (ApplyUiAutomationStrategy())
           return true;
         break;
     }
@@ -125,14 +75,80 @@ bool ApplyStrategies(Result& result) {
   return false;
 }
 
-bool ApplyStrategies(std::vector<Result>& results) {
+bool ApplyStrategies(media_proc_t media_proc, std::vector<Result>& results) {
   bool success = false;
 
   for (auto& result : results) {
-    success |= ApplyStrategies(result);
+    Strategist strategist(result, media_proc);
+    success |= strategist.ApplyStrategies();
   }
 
   return success;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+bool Strategist::ApplyWindowTitleStrategy() {
+  auto title = ToUtf8String(result_.window.text);
+
+  if (!result_.player.window_title_format.empty()) {
+    const std::regex pattern(result_.player.window_title_format);
+    std::smatch match;
+    std::regex_match(title, match, pattern);
+    if (match.size() >= 2)
+      title = match[1].str();
+  }
+
+  return AddMedia({MediaInformationType::Unknown, title});
+}
+
+bool Strategist::ApplyOpenFilesStrategy() {
+  const std::set<DWORD> process_ids{result_.process.id};
+
+  auto open_files_proc = [this](const OpenFile& open_file) -> bool {
+    AddMedia({MediaInformationType::File, ToUtf8String(open_file.path)});
+    return true;
+  };
+
+  return EnumerateOpenFiles(process_ids, open_files_proc);
+}
+
+bool Strategist::ApplyUiAutomationStrategy() {
+  auto web_browser_proc = [this](
+      const WebBrowserInformation& web_browser_information) -> bool {
+    const auto value = ToUtf8String(web_browser_information.value);
+
+    switch (web_browser_information.type) {
+      case WebBrowserInformationType::Address:
+        if (!AddMedia({MediaInformationType::Url, value}))
+          return false;
+        break;
+      case WebBrowserInformationType::Title:
+      case WebBrowserInformationType::Tab:
+        AddMedia({MediaInformationType::Title, value});
+        break;
+    }
+
+    return true;
+  };
+
+  return GetWebBrowserInformation(result_.window.handle, web_browser_proc);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+bool Strategist::AddMedia(const MediaInformation media_information) {
+  if (media_information.value.empty())
+    return false;
+
+  if (!media_proc_(media_information))
+    return false;
+
+  Media media;
+  media.information.push_back(media_information);
+  result_.media.push_back(std::move(media));
+
+  return true;
 }
 
 }  // namespace win

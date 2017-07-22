@@ -24,16 +24,21 @@ SOFTWARE.
 
 #include <regex>
 #include <string>
+#include <vector>
+
+#include "../media.h"
+#include "../player.h"
+#include "../util.h"
 
 #include "platform.h"
 #include "util.h"
-
-#include "../util.h"
+#include "windows.h"
 
 namespace anisthesia {
 namespace win {
 
-bool IsPlayerWindow(const Window& window, const Player& player) {
+bool IsPlayerWindow(const Process& process, const Window& window,
+                    const Player& player) {
   auto check_pattern = [](const std::string& pattern, const std::string& str) {
     if (pattern.empty())
       return false;
@@ -52,13 +57,36 @@ bool IsPlayerWindow(const Window& window, const Player& player) {
 
   auto check_executables = [&]() {
     for (const auto& pattern : player.executables) {
-      if (check_pattern(pattern, ToUtf8String(window.process_file_name)))
+      if (check_pattern(pattern, ToUtf8String(process.name)))
         return true;
     }
     return false;
   };
 
   return check_windows() && check_executables();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+bool GetResults(const std::vector<Player>& players, media_proc_t media_proc,
+                std::vector<Result>& results) {
+  auto window_proc = [&](const Process& process, const Window& window) -> bool {
+    for (const auto& player : players) {
+      if (IsPlayerWindow(process, window, player)) {
+        results.push_back({player, process, window, {}});
+        break;
+      }
+    }
+    return true;
+  };
+
+  if (!EnumerateWindows(window_proc))
+    return false;
+
+  if (!ApplyStrategies(media_proc, results))
+    return false;
+
+  return true;
 }
 
 }  // namespace win

@@ -29,8 +29,7 @@ SOFTWARE.
 #include <uiautomation.h>
 
 #include "ui_automation.h"
-
-#include "../util.h"
+#include "util.h"
 
 namespace anisthesia {
 namespace win {
@@ -271,7 +270,10 @@ bool EnumerateTabs(Element& parent, std::vector<std::wstring>& tabs) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool GetWebBrowserInformation(HWND hwnd, web_browser_information_proc_t proc) {
+bool GetWebBrowserInformation(HWND hwnd, web_browser_proc_t web_browser_proc) {
+  if (!web_browser_proc)
+    return false;
+
   if (!InitializeUIAutomation())
     return false;
 
@@ -280,19 +282,19 @@ bool GetWebBrowserInformation(HWND hwnd, web_browser_information_proc_t proc) {
     return false;
 
   const std::wstring title = GetElementName(*parent);
-  if (!proc(WebBrowserInformationType::Title, title))
+  if (!web_browser_proc({WebBrowserInformationType::Title, title}))
     return false;
 
   std::wstring address;
   if (!FindAddressBar(*parent, address) ||
-      !proc(WebBrowserInformationType::Address, address)) {
+      !web_browser_proc({WebBrowserInformationType::Address, address})) {
     return false;
   }
 
   std::vector<std::wstring> tabs;
   EnumerateTabs(*parent, tabs);
   for (const auto& tab : tabs) {
-    if (!proc(WebBrowserInformationType::Tab, tab))
+    if (!web_browser_proc({WebBrowserInformationType::Tab, tab}))
       return false;
   }
 

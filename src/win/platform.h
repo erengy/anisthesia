@@ -35,21 +35,28 @@ SOFTWARE.
 namespace anisthesia {
 namespace win {
 
+struct Process {
+  DWORD id = 0;
+  std::wstring name;
+};
+
 struct Window {
   HWND handle = nullptr;
-  DWORD process_id = 0;
   std::wstring class_name;
-  std::wstring process_file_name;
   std::wstring text;
 };
 
 struct Result {
-  const Player player;
-  const Window window;
+  Player player;
+  Process process;
+  Window window;
   std::vector<Media> media;
 };
 
-bool IsPlayerWindow(const Window& window, const Player& player);
+bool ApplyStrategies(media_proc_t media_proc, std::vector<Result>& results);
+
+bool GetResults(const std::vector<Player>& players, media_proc_t media_proc,
+                std::vector<Result>& results);
 
 }  // namespace win
 }  // namespace anisthesia

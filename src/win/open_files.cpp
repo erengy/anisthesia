@@ -29,8 +29,7 @@ SOFTWARE.
 #include <winternl.h>
 
 #include "open_files.h"
-
-#include "../util.h"
+#include "util.h"
 
 namespace anisthesia {
 namespace win {
@@ -326,9 +325,9 @@ bool VerifyPath(const std::wstring& path) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool EnumerateFiles(const std::set<DWORD>& process_ids,
-                    enum_files_proc_t enum_files_proc) {
-  if (!enum_files_proc)
+bool EnumerateOpenFiles(const std::set<DWORD>& process_ids,
+                        open_file_proc_t open_file_proc) {
+  if (!open_file_proc)
     return false;
 
   std::map<DWORD, Handle> process_handles;
@@ -387,7 +386,7 @@ bool EnumerateFiles(const std::set<DWORD>& process_ids,
     if (!VerifyPath(open_file.path))
       continue;
 
-    if (!enum_files_proc(open_file))
+    if (!open_file_proc(open_file))
       return false;
   }
 

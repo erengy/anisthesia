@@ -22,8 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#pragma once
-
 #include <functional>
 #include <string>
 
@@ -32,11 +30,20 @@ SOFTWARE.
 namespace anisthesia {
 namespace win {
 
-struct Window;
+enum class WebBrowserInformationType {
+  Address,
+  Tab,
+  Title,
+};
 
-using enum_windows_proc_t = std::function<bool(const Window&)>;
+struct WebBrowserInformation {
+  WebBrowserInformationType type = WebBrowserInformationType::Title;
+  std::wstring value;
+};
 
-bool EnumerateWindows(enum_windows_proc_t enum_windows_proc);
+using web_browser_proc_t = std::function<bool(const WebBrowserInformation&)>;
+
+bool GetWebBrowserInformation(HWND hwnd, web_browser_proc_t web_browser_proc);
 
 }  // namespace win
 }  // namespace anisthesia

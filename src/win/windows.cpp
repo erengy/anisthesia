@@ -27,10 +27,9 @@ SOFTWARE.
 
 #include <windows.h>
 
-#include "window_title.h"
-
-#include "../platform.h"
-#include "../util.h"
+#include "platform.h"
+#include "util.h"
+#include "windows.h"
 
 namespace anisthesia {
 namespace win {
@@ -150,34 +149,35 @@ BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM param) {
 
   Window window;
   window.handle = hwnd;
-  window.process_id = GetWindowProcessId(hwnd);
   window.text = GetWindowText(hwnd);
 
   window.class_name = GetWindowClassName(hwnd);
   if (!VerifyClassName(window.class_name))
     return TRUE;
 
-  const auto process_path = GetProcessPath(window.process_id);
-  if (!VerifyProcessPath(process_path))
+  Process process;
+  process.id = GetWindowProcessId(hwnd);
+
+  const auto path = GetProcessPath(process.id);
+  if (!VerifyProcessPath(path))
     return TRUE;
 
-  window.process_file_name = GetFileNameWithoutExtension(
-      GetFileNameFromPath(process_path));
-  if (!VerifyProcessFileName(window.process_file_name))
+  process.name = GetFileNameWithoutExtension(GetFileNameFromPath(path));
+  if (!VerifyProcessFileName(process.name))
     return TRUE;
 
-  auto& enum_windows_proc = *reinterpret_cast<enum_windows_proc_t*>(param);
-  if (!enum_windows_proc(window))
+  auto& window_proc = *reinterpret_cast<window_proc_t*>(param);
+  if (!window_proc(process, window))
     return FALSE;
 
   return TRUE;
 }
 
-bool EnumerateWindows(enum_windows_proc_t enum_windows_proc) {
-  if (!enum_windows_proc)
+bool EnumerateWindows(window_proc_t window_proc) {
+  if (!window_proc)
     return false;
 
-  const auto param = reinterpret_cast<LPARAM>(&enum_windows_proc);
+  const auto param = reinterpret_cast<LPARAM>(&window_proc);
 
   // Note that EnumWindows enumerates only top-level windows of desktop apps
   // (as opposed to UWP apps) on Windows 8 and above.

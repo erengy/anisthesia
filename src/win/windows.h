@@ -22,25 +22,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include <functional>
-#include <string>
-#include <vector>
+#pragma once
 
-#include <windows.h>
+#include <functional>
 
 namespace anisthesia {
 namespace win {
 
-enum class WebBrowserInformationType {
-  Address,
-  Tab,
-  Title,
-};
+struct Process;
+struct Window;
 
-using web_browser_information_proc_t =
-    std::function<bool(WebBrowserInformationType, const std::wstring&)>;
+using window_proc_t = std::function<bool(const Process&, const Window&)>;
 
-bool GetWebBrowserInformation(HWND hwnd, web_browser_information_proc_t proc);
+bool EnumerateWindows(window_proc_t window_proc);
 
 }  // namespace win
 }  // namespace anisthesia
