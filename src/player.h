@@ -49,6 +49,7 @@ struct Player {
   std::vector<Strategy> strategies;
 };
 
-bool ParsePlayersData(const std::string& path, std::vector<Player>& players);
+bool ParsePlayersData(const std::string& data, std::vector<Player>& players);
+bool ParsePlayersFile(const std::string& path, std::vector<Player>& players);
 
 }  // namespace anisthesia

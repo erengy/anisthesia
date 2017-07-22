@@ -179,9 +179,8 @@ bool HandleState(std::string& line, std::vector<Player>& players, State& state) 
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool ParsePlayersData(const std::string& path, std::vector<Player>& players) {
-  std::string data;
-  if (!util::ReadFile(path, data))
+bool ParsePlayersData(const std::string& data, std::vector<Player>& players) {
+  if (data.empty())
     return false;
 
   std::istringstream stream(data);
@@ -209,6 +208,15 @@ bool ParsePlayersData(const std::string& path, std::vector<Player>& players) {
   }
 
   return !players.empty();
+}
+
+bool ParsePlayersFile(const std::string& path, std::vector<Player>& players) {
+  std::string data;
+
+  if (!util::ReadFile(path, data))
+    return false;
+
+  return ParsePlayersData(data, players);
 }
 
 }  // namespace anisthesia
