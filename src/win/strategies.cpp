@@ -103,14 +103,18 @@ bool Strategist::ApplyWindowTitleStrategy() {
 }
 
 bool Strategist::ApplyOpenFilesStrategy() {
-  const std::set<DWORD> process_ids{result_.process.id};
+  bool success = false;
 
-  auto open_files_proc = [this](const OpenFile& open_file) -> bool {
-    AddMedia({MediaInformationType::File, ToUtf8String(open_file.path)});
-    return true;
+  auto open_files_proc = [this, &success](const OpenFile& open_file) -> bool {
+    success = AddMedia(
+        {MediaInformationType::File, ToUtf8String(open_file.path)});
+    return !success;
   };
 
-  return EnumerateOpenFiles(process_ids, open_files_proc);
+  const std::set<DWORD> process_ids{result_.process.id};
+  EnumerateOpenFiles(process_ids, open_files_proc);
+
+  return success;
 }
 
 bool Strategist::ApplyUiAutomationStrategy() {
