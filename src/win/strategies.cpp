@@ -88,18 +88,28 @@ bool ApplyStrategies(media_proc_t media_proc, std::vector<Result>& results) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool Strategist::ApplyWindowTitleStrategy() {
-  auto title = ToUtf8String(result_.window.text);
-
-  if (!result_.player.window_title_format.empty()) {
-    const std::regex pattern(result_.player.window_title_format);
+bool ApplyWindowTitleFormat(const std::string& format, std::string& title) {
+  if (!format.empty()) {
+    const std::regex pattern(format);
     std::smatch match;
     std::regex_match(title, match, pattern);
-    if (match.size() >= 2)
+    if (match.size() >= 2) {
       title = match[1].str();
+      return true;
+    }
   }
 
-  return AddMedia({MediaInformationType::Unknown, title});
+  return false;
+}
+
+bool Strategist::ApplyWindowTitleStrategy() {
+  auto title = ToUtf8String(result_.window.text);
+  ApplyWindowTitleFormat(result_.player.window_title_format, title);
+
+  // @TODO: Try to guess the actual type
+  auto media_information_type = MediaInformationType::Unknown;
+
+  return AddMedia({media_information_type, title});
 }
 
 bool Strategist::ApplyOpenFilesStrategy() {
@@ -120,7 +130,7 @@ bool Strategist::ApplyOpenFilesStrategy() {
 bool Strategist::ApplyUiAutomationStrategy() {
   auto web_browser_proc = [this](
       const WebBrowserInformation& web_browser_information) -> bool {
-    const auto value = ToUtf8String(web_browser_information.value);
+    auto value = ToUtf8String(web_browser_information.value);
 
     switch (web_browser_information.type) {
       case WebBrowserInformationType::Address:
@@ -128,6 +138,8 @@ bool Strategist::ApplyUiAutomationStrategy() {
           return false;
         break;
       case WebBrowserInformationType::Title:
+        ApplyWindowTitleFormat(result_.player.window_title_format, value);
+        // [[fallthrough]]
       case WebBrowserInformationType::Tab:
         AddMedia({MediaInformationType::Title, value});
         break;
