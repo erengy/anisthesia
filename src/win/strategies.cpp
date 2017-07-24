@@ -93,8 +93,8 @@ bool ApplyWindowTitleFormat(const std::string& format, std::string& title) {
     const std::regex pattern(format);
     std::smatch match;
     std::regex_match(title, match, pattern);
-    if (match.size() >= 2) {
-      title = match[1].str();
+    if (match.size() > 1) {
+      title = match.str(1);
       return true;
     }
   }
@@ -102,14 +102,22 @@ bool ApplyWindowTitleFormat(const std::string& format, std::string& title) {
   return false;
 }
 
+MediaInformationType InferMediaInformationType(const std::string& str) {
+  auto type = MediaInformationType::Unknown;
+
+  static const std::regex local_path_pattern("[A-Z]:[/\\\\].+");
+  if (std::regex_match(str, local_path_pattern)) {
+    type = MediaInformationType::File;
+  }
+
+  return type;
+}
+
 bool Strategist::ApplyWindowTitleStrategy() {
   auto title = ToUtf8String(result_.window.text);
   ApplyWindowTitleFormat(result_.player.window_title_format, title);
 
-  // @TODO: Try to guess the actual type
-  auto media_information_type = MediaInformationType::Unknown;
-
-  return AddMedia({media_information_type, title});
+  return AddMedia({InferMediaInformationType(title), title});
 }
 
 bool Strategist::ApplyOpenFilesStrategy() {
