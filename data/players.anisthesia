@@ -335,15 +335,15 @@ Google Chrome
 	type:
 		web_browser
 
-Microsoft Edge
+Internet Explorer
 	windows:
-		Windows.UI.Core.CoreWindow
+		IEFrame
 	executables:
-		MicrosoftEdge
+		iexplore
 	strategies:
 		ui_automation
 		window_title:
-			^(.*) - Microsoft Edge
+			^(.*) - Internet Explorer
 	type:
 		web_browser
 
@@ -356,13 +356,12 @@ Mozilla Firefox
 	strategies:
 		ui_automation
 		window_title:
-			^(.*) - (?:Mozilla )?Firefox(?: Developer Edition)?
+			^(.*) - (?:(?:Mozilla Firefox)|(?:Firefox Developer Edition))
 	type:
 		web_browser
 
 Opera
 	windows:
-		Chrome_WidgetWin_0
 		Chrome_WidgetWin_1
 	executables:
 		opera
@@ -370,5 +369,17 @@ Opera
 		ui_automation
 		window_title:
 			^(.*) - Opera
+	type:
+		web_browser
+
+Waterfox
+	windows:
+		MozillaWindowClass
+	executables:
+		waterfox
+	strategies:
+		ui_automation
+		window_title:
+			^(.*) - Waterfox
 	type:
 		web_browser
