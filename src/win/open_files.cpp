@@ -236,6 +236,7 @@ bool VerifyObjectType(HANDLE handle, USHORT object_type_index) {
   // - 30: Windows 8.1
   // - 31: Windows 8, Windows 10
   // - 34: Windows 10 Anniversary Update
+  // - 35: Windows 10 Creators Update
   //
   // Here we initialize the value with 0, so that it is determined at run time.
   // This is more reliable than hard-coding the values for each OS version.
@@ -285,7 +286,7 @@ bool VerifyAccessMask(ACCESS_MASK access_mask) {
   // - 0x00100000 SYNCHRONIZE
   //
   // Media players must have read-access in order to play a video file, so we
-  // can safely skip a handle in the abscence of this basic right:
+  // can safely skip a handle in the absence of this basic right:
   if (!(access_mask & FILE_READ_DATA))
     return false;
 
