@@ -93,9 +93,14 @@ bool ApplyWindowTitleFormat(const std::string& format, std::string& title) {
     const std::regex pattern(format);
     std::smatch match;
     std::regex_match(title, match, pattern);
-    if (match.size() > 1) {
-      title = match.str(1);
-      return true;
+
+    // Use the first non-empty match result, because the regular expression may
+    // contain multiple sub-expressions.
+    for (size_t i = 1; i < match.size(); ++i) {
+      if (!match.str(i).empty()) {
+        title = match.str(i);
+        return true;
+      }
     }
   }
 
