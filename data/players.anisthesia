@@ -3,21 +3,34 @@
 #
 # Please read before editing this file:
 # - Indentation is significant. You must use tabs rather than spaces.
-# - Regular expressions begin with a '^' character.
+# - Regular expressions begin with a '^' character. ECMAScript grammar is used.
 #
 # The latest version of this file can be found at:
 # <https://github.com/erengy/anisthesia>
 #
 # This file is in the public domain.
 
-ACE Player HD (VLC)
+5KPlayer
+	windows:
+		Qt5QWindowIcon
+	executables:
+		5KPlayer
+	strategies:
+		open_files
+
+Ace Player HD
 	windows:
 		QWidget
 	executables:
 		ace_player
 	strategies:
+		# Must be enabled from: Advanced Preferences -> Interface -> Main
+		# interfaces -> Qt -> Show playing item name in window title
+		#
+		# We use the last alternative to avoid detecting other windows such as
+		# Preferences dialog, which has the same generic class name.
 		window_title:
-			^(.*) - Ace Player HD
+			^Ace Player HD.*|(.+) - Ace Player HD.*|.+
 
 ALLPlayer
 	windows:
@@ -33,8 +46,11 @@ Baka MPlayer
 	executables:
 		Baka MPlayer
 	strategies:
+		open_files
+		# We cannot avoid detecting other windows such as Preferences dialog, which
+		# has the same generic class name.
 		window_title:
-			^(.*)
+			^Baka MPlayer|(.+)
 
 BESTplayer
 	windows:
@@ -42,29 +58,31 @@ BESTplayer
 	executables:
 		BESTplayer
 	strategies:
+		open_files
 		window_title:
-			^(.*) - BESTplayer
+			^BESTplayer.*|(.+) - BESTplayer.*
 
-Bomi Player
+bomi
 	windows:
 		Qt5QWindowGLOwnDCIcon
 	executables:
 		bomi
 	strategies:
+		open_files
 		window_title:
-			^(.*) - bomi
+			^bomi|(.+) - bomi
 
-BSPlayer
+BS.Player
 	windows:
 		BSPlayer
 	executables:
 		bsplayer
 	strategies:
-		# @TODO: BSPlayer API
 		open_files
 
 DivX Player
 	windows:
+		Qt5QWindowIcon
 		QWidget
 	executables:
 		DivX Player
@@ -78,46 +96,50 @@ GOM Player
 	executables:
 		GOM
 	strategies:
+		open_files
 		window_title:
-			[Built-in subtitle] GOM Player
+			^GOM Player|(.+)\[Subtitle\] - GOM Player|(.+) - GOM Player
 
-Kantaris Media Player
+Kantaris
 	windows:
-		WindowsForms10.Window.20008.app.0.378734a
+		^WindowsForms10\.Window\.20008\.app\..+
 	executables:
 		Kantaris
 		KantarisMain
 	strategies:
 		open_files
+		window_title:
+			^Kantaris.*|(.+) \d{2}:\d{2}:\d{2} - \d{2}:\d{2}:\d{2}
 
 KMPlayer
 	windows:
-		# @TODO: Invisible?
-		KMPlayer v3.x
-		Winamp v1.x
+		TApplication
 	executables:
 		KMPlayer
 	strategies:
 		open_files
+		window_title:
+			^The KMPlayer|(?:\[\d+/\d+\] )?(.+) - The KMPlayer
 
-Kodi (XBMC)
+Kodi
 	windows:
 		Kodi
 		XBMC
 	executables:
-		Kodi
+		kodi
 		XBMC
 	strategies:
 		open_files
 
 Light Alloy
 	windows:
-		LightAlloyFront
+		TApplication
 	executables:
 		LA
 	strategies:
+		open_files
 		window_title:
-			^(.*) - Light Alloy
+			^Light Alloy.*|(.+) - Light Alloy.*
 
 Media Player Classic
 	windows:
@@ -126,8 +148,31 @@ Media Player Classic
 		mplayerc
 		mplayerc64
 	strategies:
+		open_files
+		# Depends on: Options -> Player -> Title bar
 		window_title:
-			^(.*) - Media Player Classic
+			^Media Player Classic|(.+) - Media Player Classic
+
+Miro
+	windows:
+		gdkWindowToplevel
+	executables:
+		Miro
+	strategies:
+		open_files
+
+MPC-BE
+	windows:
+		MediaPlayerClassicW
+		MPC-BE
+	executables:
+		mpc-be
+		mpc-be64
+	strategies:
+		open_files
+		# Depends on: Options -> Player -> Title bar
+		window_title:
+			^MPC-BE.*|(.+) - MPC-BE.*
 
 MPC-HC
 	windows:
@@ -141,51 +186,33 @@ MPC-HC
 		^mpc-hc.+
 		# LAV Filters Megamix
 		iris
+		shoukaku
 	strategies:
 		open_files
-		# Must be enabled from: Options -> Player -> Title bar
+		# Depends on: Options -> Player -> Title bar
 		window_title:
-			^(.*)(?:(?: - )?(?:Media Player Classic(?: Home Cinema)?|(?:MPC-HC)))?
-
-Media Player Classic - BE
-	windows:
-		MediaPlayerClassicW
-		MPC-BE
-	executables:
-		mpc-be
-		mpc-be64
-	strategies:
-		window_title:
-			^(.*) - MPC-BE
-
-Miro
-	windows:
-		gdkWindowToplevel
-	executables:
-		Miro
-	strategies:
-		open_files
+			^Media Player Classic Home Cinema|MPC-HC|(.+)
 
 MPCSTAR
 	windows:
+		^wxWindow@.*
 		wxWindowClassNR
 	executables:
 		mpcstar
 	strategies:
+		open_files
 		window_title:
-			^(.*) - MPCSTAR
+			^MPCSTAR.*|(.+) - MPCSTAR.*
 
 MPDN
 	windows:
-		# @TODO: Invisible?
-		FilterGraphWindow
-		VsyncWindowClass
+		^WindowsForms10\.Window\.8\.app\..+
 	executables:
 		MediaPlayerDotNet
 	strategies:
 		open_files
 		window_title:
-			^(.*) - MPDN
+			^MPDN - Media Player .NET \((?:32|64)-bit Edition\)|(.*) - MPDN \((?:32|64)-bit Edition\)
 
 mpv
 	windows:
@@ -194,8 +221,10 @@ mpv
 		mpv
 	strategies:
 		open_files
+		# May be in an unexpected format if "--title" option is used. Ideally, it
+		# should return only "${filename}", "${path}" or "${media-title}".
 		window_title:
-			^(?:mpv - )?(.*)(?: - mpv)?
+			^No file - mpv|(.+) - mpv|mpv - (.+)
 
 MV2Player
 	windows:
@@ -204,8 +233,10 @@ MV2Player
 		Mv2Player
 		Mv2PlayerPlus
 	strategies:
+		open_files
+		# Depends on: Options -> Player -> Constant app. title
 		window_title:
-			MV2 Player
+			^MV2 Player|(.+)
 
 PotPlayer
 	windows:
@@ -218,23 +249,34 @@ PotPlayer
 		PotPlayerMini64
 		# LAV Filters Megamix
 		sumire
+		zuikaku
 	strategies:
 		open_files
+		window_title:
+			^PotPlayer|(.+) - PotPlayer
 
 SMPlayer
 	windows:
+		Qt5QWindowIcon
 		QWidget
 	executables:
 		smplayer
 		smplayer2
 	strategies:
+		# "open_files" strategy does not work here, because files are loaded by
+		# a child process of SMPlayer (mplayer or mpv, depending on the selected
+		# multimedia engine).
+		#
+		# We use the last alternative to avoid detecting other windows such as
+		# Preferences dialog, which has the same generic class name.
 		window_title:
-			^(.*) - SMPlayer
+			^SMPlayer|(.+) - SMPlayer|.+
 
-Splash Lite
+Splash
 	windows:
 		DX_DISPLAY0
 	executables:
+		Splash
 		SplashLite
 	strategies:
 		open_files
@@ -245,8 +287,10 @@ SPlayer
 	executables:
 		splayer
 	strategies:
+		open_files
+		# Does not work in theater mode.
 		window_title:
-			[GPU Accel+EVR] SPlayer
+			^SPlayer|(?:\[(?:GPU Accel\+)?EVR\] )?(.+) - SPlayer
 
 UMPlayer
 	windows:
@@ -254,8 +298,13 @@ UMPlayer
 	executables:
 		umplayer
 	strategies:
-		# @TODO: MPlayer
-		open_files
+		# "open_files" strategy does not work here, because files are loaded by
+		# a child process of UMPlayer (mplayer).
+		#
+		# We use the last alternative to avoid detecting other windows such as
+		# Preferences dialog, which has the same generic class name.
+		window_title:
+			^UMPlayer|(.+) - UMPlayer|.+
 
 VLC media player
 	windows:
@@ -264,25 +313,26 @@ VLC media player
 		Qt5QWindowIcon
 		# Skinnable interface
 		SkinWindowClass
-		# @TODO: Is this still used?
-		VLC DirectX
 	executables:
 		vlc
 	strategies:
 		open_files
 		# Must be enabled from: Advanced Preferences -> Interface -> Main
 		# interfaces -> Qt -> Show playing item name in window title
+		#
+		# We use the last alternative to avoid detecting other windows such as
+		# Preferences dialog, which has the same generic class name.
 		window_title:
-			^(.*) - VLC media player
+			^VLC media player|(.+) - VLC media player|.+
 
-WebTorrent
+WebTorrent Desktop
 	windows:
 		Chrome_WidgetWin_1
 	executables:
 		WebTorrent
 	strategies:
 		window_title:
-			^(.*)
+			^WebTorrent(?: \(BETA\))?|(.+)
 
 Winamp
 	windows:
@@ -290,16 +340,9 @@ Winamp
 	executables:
 		winamp
 	strategies:
-		# @TODO: Winamp API
 		open_files
-
-Windows Media Center
-	windows:
-		eHome Render Window
-	executables:
-		ehshell
-	strategies:
-		open_files
+		window_title:
+			^Winamp [\d.]+ Build \d+|\d+\. (.+) - Winamp(?: \[.+\])?
 
 Windows Media Player
 	windows:
@@ -312,13 +355,13 @@ Windows Media Player
 
 Zoom Player
 	windows:
-		# @TODO: Invisible?
 		TApplication
 	executables:
 		zplayer
 	strategies:
+		open_files
 		window_title:
-			^(.*) - Zoom Player
+			^Zoom Player|(.+) - Zoom Player (?:FREE|MAX)
 
 ################################################################################
 # Web browsers
@@ -331,7 +374,7 @@ Google Chrome
 	strategies:
 		ui_automation
 		window_title:
-			^(.*) - Google Chrome
+			^(.+) - Google Chrome
 	type:
 		web_browser
 
@@ -343,7 +386,7 @@ Internet Explorer
 	strategies:
 		ui_automation
 		window_title:
-			^(.*) - Internet Explorer
+			^(.+) - Internet Explorer
 	type:
 		web_browser
 
@@ -356,7 +399,7 @@ Mozilla Firefox
 	strategies:
 		ui_automation
 		window_title:
-			^(.*) - (?:(?:Mozilla Firefox)|(?:Firefox Developer Edition))
+			^(.+) - (?:Mozilla Firefox|Firefox Developer Edition)
 	type:
 		web_browser
 
@@ -368,7 +411,7 @@ Opera
 	strategies:
 		ui_automation
 		window_title:
-			^(.*) - Opera
+			^(.+) - Opera
 	type:
 		web_browser
 
@@ -380,6 +423,6 @@ Waterfox
 	strategies:
 		ui_automation
 		window_title:
-			^(.*) - Waterfox
+			^(.+) - Waterfox
 	type:
 		web_browser
