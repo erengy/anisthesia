@@ -102,6 +102,12 @@ bool ApplyWindowTitleFormat(const std::string& format, std::string& title) {
         return true;
       }
     }
+
+    // Results are empty, but the match was successful
+    if (!match.empty()) {
+      title.clear();
+      return true;
+    }
   }
 
   return false;
