@@ -36,6 +36,7 @@ using media_time_t = std::chrono::milliseconds;
 enum class MediaInformationType {
   Unknown,
   File,
+  Tab,
   Title,
   Url,
 };

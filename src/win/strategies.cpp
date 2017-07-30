@@ -157,9 +157,10 @@ bool Strategist::ApplyUiAutomationStrategy() {
         break;
       case WebBrowserInformationType::Title:
         ApplyWindowTitleFormat(result_.player.window_title_format, value);
-        // [[fallthrough]]
-      case WebBrowserInformationType::Tab:
         AddMedia({MediaInformationType::Title, value});
+        break;
+      case WebBrowserInformationType::Tab:
+        AddMedia({MediaInformationType::Tab, value});
         break;
     }
 
