@@ -374,7 +374,7 @@ Google Chrome
 	strategies:
 		ui_automation
 		window_title:
-			^(.+) - Google Chrome
+			^(.+) \(Incognito\)(?: - Google Chrome)?|(.+) - Google Chrome|(.+)
 	type:
 		web_browser
 
@@ -386,7 +386,7 @@ Internet Explorer
 	strategies:
 		ui_automation
 		window_title:
-			^(.+) - Internet Explorer
+			^(.+) - Internet Explorer(?: - \[InPrivate\])?
 	type:
 		web_browser
 
@@ -399,7 +399,7 @@ Mozilla Firefox
 	strategies:
 		ui_automation
 		window_title:
-			^(.+) - (?:Mozilla Firefox|Firefox Developer Edition)
+			^(.+) - (?:Mozilla Firefox|Firefox Developer Edition)(?: \(Private Browsing\))?
 	type:
 		web_browser
 
@@ -411,7 +411,7 @@ Opera
 	strategies:
 		ui_automation
 		window_title:
-			^(.+) - Opera
+			^(.+) - Opera(?: \(Private\))?
 	type:
 		web_browser
 
@@ -423,6 +423,6 @@ Waterfox
 	strategies:
 		ui_automation
 		window_title:
-			^(.+) - Waterfox
+			^(.+) - Waterfox(?: \(Private Browsing\))?
 	type:
 		web_browser
