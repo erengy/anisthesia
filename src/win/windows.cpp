@@ -89,13 +89,19 @@ std::wstring GetProcessPath(DWORD process_id) {
 ////////////////////////////////////////////////////////////////////////////////
 
 bool VerifyWindowStyle(HWND hwnd) {
+  const auto window_style = ::GetWindowLong(hwnd, GWL_STYLE);
   const auto window_ex_style = ::GetWindowLong(hwnd, GWL_EXSTYLE);
 
+  auto has_style = [&window_style](DWORD style) {
+    return (window_style & style) != 0;
+  };
   auto has_ex_style = [&window_ex_style](DWORD ex_style) {
     return (window_ex_style & ex_style) != 0;
   };
 
   // Toolbars, tooltips and similar topmost windows
+  if (has_style(WS_POPUP) && has_ex_style(WS_EX_TOOLWINDOW))
+    return false;
   if (has_ex_style(WS_EX_TOPMOST) && has_ex_style(WS_EX_TOOLWINDOW))
     return false;
 
