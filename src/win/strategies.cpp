@@ -153,8 +153,7 @@ bool Strategist::ApplyUiAutomationStrategy() {
 
     switch (web_browser_information.type) {
       case WebBrowserInformationType::Address:
-        if (!AddMedia({MediaInformationType::Url, value}))
-          return false;
+        AddMedia({MediaInformationType::Url, value});
         break;
       case WebBrowserInformationType::Title:
         ApplyWindowTitleFormat(result_.player.window_title_format, value);
