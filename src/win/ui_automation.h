@@ -41,7 +41,7 @@ struct WebBrowserInformation {
   std::wstring value;
 };
 
-using web_browser_proc_t = std::function<bool(const WebBrowserInformation&)>;
+using web_browser_proc_t = std::function<void(const WebBrowserInformation&)>;
 
 bool GetWebBrowserInformation(HWND hwnd, web_browser_proc_t web_browser_proc);
 

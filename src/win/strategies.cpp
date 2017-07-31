@@ -148,7 +148,7 @@ bool Strategist::ApplyOpenFilesStrategy() {
 
 bool Strategist::ApplyUiAutomationStrategy() {
   auto web_browser_proc = [this](
-      const WebBrowserInformation& web_browser_information) -> bool {
+      const WebBrowserInformation& web_browser_information) {
     auto value = ToUtf8String(web_browser_information.value);
 
     switch (web_browser_information.type) {
@@ -163,8 +163,6 @@ bool Strategist::ApplyUiAutomationStrategy() {
         AddMedia({MediaInformationType::Tab, value});
         break;
     }
-
-    return true;
   };
 
   return GetWebBrowserInformation(result_.window.handle, web_browser_proc);
