@@ -47,8 +47,7 @@ size_t GetIndentation(const std::string& line) {
   return line.find_first_not_of('\t');
 }
 
-bool HandleIndentation(const std::string& line,
-                       const size_t current,
+bool HandleIndentation(const size_t current,
                        const std::vector<Player>& players,
                        State& state) {
   // Each state has a definitive expected indentation
@@ -200,7 +199,7 @@ bool ParsePlayersData(const std::string& data, std::vector<Player>& players) {
     if (line.empty() || line.front() == '#')
       continue;  // Ignore empty lines and comments
 
-    if (!parser::HandleIndentation(line, indentation, players, state))
+    if (!parser::HandleIndentation(indentation, players, state))
       return false;
 
     if (!parser::HandleState(line, players, state))
