@@ -332,7 +332,7 @@ WebTorrent Desktop
 		WebTorrent
 	strategies:
 		window_title:
-			^WebTorrent(?: \(BETA\))?|(.+)
+			^WebTorrent(?: \(BETA\))?|Main Window|Preferences|About WebTorrent.*|(.+)
 
 Winamp
 	windows:
