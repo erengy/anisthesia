@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2017 Eren Okka
+Copyright (c) 2017-2018 Eren Okka
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -177,7 +177,7 @@ HANDLE OpenProcess(DWORD process_id) {
 HANDLE DuplicateHandle(HANDLE process_handle, HANDLE handle) {
   HANDLE dup_handle = nullptr;
   const auto result = ::DuplicateHandle(process_handle, handle,
-      GetCurrentProcess(), &dup_handle, 0, false, DUPLICATE_SAME_ACCESS);
+      ::GetCurrentProcess(), &dup_handle, 0, false, DUPLICATE_SAME_ACCESS);
   return result ? dup_handle : nullptr;
 }
 
@@ -237,6 +237,7 @@ bool VerifyObjectType(HANDLE handle, USHORT object_type_index) {
   // - 31: Windows 8, Windows 10
   // - 34: Windows 10 Anniversary Update
   // - 35: Windows 10 Creators Update
+  // - 36: Windows 10 Fall Creators Update
   //
   // Here we initialize the value with 0, so that it is determined at run time.
   // This is more reliable than hard-coding the values for each OS version.
