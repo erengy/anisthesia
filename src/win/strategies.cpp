@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2017 Eren Okka
+Copyright (c) 2017-2018 Eren Okka
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -114,14 +114,13 @@ bool ApplyWindowTitleFormat(const std::string& format, std::string& title) {
 }
 
 MediaInformationType InferMediaInformationType(const std::string& str) {
-  auto type = MediaInformationType::Unknown;
-
-  static const std::regex local_path_pattern("[A-Z]:[/\\\\].+");
-  if (std::regex_match(str, local_path_pattern)) {
-    type = MediaInformationType::File;
+  static const std::regex path_pattern(
+      R"(^(?:[A-Za-z]:[/\\]|\\\\)[^<>:"/\\|?*]+)");
+  if (std::regex_search(str, path_pattern)) {
+    return MediaInformationType::File;
   }
 
-  return type;
+  return MediaInformationType::Unknown;
 }
 
 bool Strategist::ApplyWindowTitleStrategy() {
