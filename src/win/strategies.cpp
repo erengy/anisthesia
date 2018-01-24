@@ -55,24 +55,23 @@ private:
 ////////////////////////////////////////////////////////////////////////////////
 
 bool Strategist::ApplyStrategies() {
+  bool success = false;
+
   for (const auto strategy : result_.player.strategies) {
     switch (strategy) {
       case Strategy::WindowTitle:
-        if (ApplyWindowTitleStrategy())
-          return true;
+        success |= ApplyWindowTitleStrategy();
         break;
       case Strategy::OpenFiles:
-        if (ApplyOpenFilesStrategy())
-          return true;
+        success |= ApplyOpenFilesStrategy();
         break;
       case Strategy::UiAutomation:
-        if (ApplyUiAutomationStrategy())
-          return true;
+        success |= ApplyUiAutomationStrategy();
         break;
     }
   }
 
-  return false;
+  return success;
 }
 
 bool ApplyStrategies(media_proc_t media_proc, std::vector<Result>& results) {
@@ -134,9 +133,9 @@ bool Strategist::ApplyOpenFilesStrategy() {
   bool success = false;
 
   auto open_files_proc = [this, &success](const OpenFile& open_file) -> bool {
-    success = AddMedia(
+    success |= AddMedia(
         {MediaInformationType::File, ToUtf8String(open_file.path)});
-    return !success;
+    return true;
   };
 
   const std::set<DWORD> process_ids{result_.process.id};
