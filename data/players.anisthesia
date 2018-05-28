@@ -153,6 +153,20 @@ Media Player Classic
 		window_title:
 			^Media Player Classic|(.+) - Media Player Classic
 
+Media Player Classic Qute Theater
+	windows:
+		Qt5QWindowIcon
+	executables:
+		mpc-qt
+	strategies:
+		open_files
+		# Depends on: Options -> Player -> Title bar
+		#
+		# We use the last alternative to avoid detecting other windows such as
+		# Options dialog, which has the same generic class name.
+		window_title:
+			^Media Player Classic Qute Theater|Media Player Classic Qute Theater - (.+)|.+
+
 Miro
 	windows:
 		gdkWindowToplevel
