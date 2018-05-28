@@ -231,13 +231,18 @@ std::wstring GetFinalPathNameByHandle(HANDLE handle) {
 bool VerifyObjectType(HANDLE handle, USHORT object_type_index) {
   // File type index varies between OS versions:
   //
-  // - 25: Windows Vista
-  // - 28: Windows XP, Windows 7
-  // - 30: Windows 8.1
-  // - 31: Windows 8, Windows 10
-  // - 34: Windows 10 Anniversary Update
-  // - 35: Windows 10 Creators Update
-  // - 36: Windows 10 Fall Creators Update
+  // Index | OS version
+  // ------|-----------
+  //    25 | Vista
+  //    28 | XP
+  //       | 7
+  //    30 | 8.1
+  //    31 | 8
+  //       | 10
+  //    34 | 10 1607 (Anniversary Update)
+  //    35 | 10 1703 (Creators Update)
+  //    36 | 10 1709 (Fall Creators Update)
+  //       | 10 1803 (April 2018 Update)
   //
   // Here we initialize the value with 0, so that it is determined at run time.
   // This is more reliable than hard-coding the values for each OS version.
