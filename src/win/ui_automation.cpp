@@ -212,9 +212,14 @@ bool FindWebBrowserElements(Element& parent, std::wstring& address,
         // on Firefox). This name can change depending on the browser
         // language. However, we are only interested in the element value,
         // which usually gives us the URL of the current page.
-        if (address.empty() && IsAddressBarElement(element))
+        if (address.empty() && IsAddressBarElement(element)) {
           address = GetElementValue(element);
-        return TreeScope_Element;
+          return TreeScope_Element;
+        } else {
+          // Opera has an edit control ("Address field") within another edit
+          // control ("Address bar").
+          return TreeScope_Descendants;
+        }
 
       case UIA_TabControlTypeId:
         if (tabs.empty() && IsTabsElement(element))
