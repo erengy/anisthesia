@@ -380,6 +380,18 @@ Zoom Player
 ################################################################################
 # Web browsers
 
+Brave Browser
+	windows:
+		Chrome_WidgetWin_1
+	executables:
+		brave
+	strategies:
+		ui_automation
+		window_title:
+			^(.+) \(Private\)(?: - Brave)?|(.+) - Brave|(.+)
+	type:
+		web_browser
+
 Google Chrome
 	windows:
 		Chrome_WidgetWin_1
