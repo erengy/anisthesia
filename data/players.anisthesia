@@ -240,6 +240,16 @@ mpv
 		window_title:
 			^No file - mpv|(.+) - mpv|mpv - (.+)
 
+mpv.net
+	windows:
+		^WindowsForms10\.Window\.8\.app\..+
+	executables:
+		mpvnet
+	strategies:
+		open_files
+		window_title:
+			^mpv\.net.*|(.+) - mpv\.net.*
+
 MV2Player
 	windows:
 		TApplication
