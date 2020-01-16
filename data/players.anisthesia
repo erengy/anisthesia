@@ -426,6 +426,18 @@ Internet Explorer
 	type:
 		web_browser
 
+Microsoft Edge
+	windows:
+		Chrome_WidgetWin_1
+	executables:
+		msedge
+	strategies:
+		ui_automation
+		window_title:
+			^(.+) and \d+ more pages? - .+|(.+) - [^-]+ - Microsoft Edge|(.+)
+	type:
+		web_browser
+
 Mozilla Firefox
 	windows:
 		MozillaUIWindowClass
