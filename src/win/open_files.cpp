@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2017-2019 Eren Okka
+Copyright (c) 2017-2020 Eren Okka
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -245,6 +245,7 @@ bool VerifyObjectType(HANDLE handle, USHORT object_type_index) {
   //       | 10 1803 (April 2018 Update)
   //       | 10 1809 (October 2018 Update)
   //    37 | 10 1903 (May 2019 Update)
+  //       | 10 1909 (November 2019 Update)
   //
   // Here we initialize the value with 0, so that it is determined at run time.
   // This is more reliable than hard-coding the values for each OS version.
