@@ -113,13 +113,15 @@ Kantaris
 
 KMPlayer
 	windows:
+		KMPlayer 64X
 		TApplication
 	executables:
 		KMPlayer
+		KMPlayer64
 	strategies:
 		open_files
 		window_title:
-			^The KMPlayer|(?:\[\d+/\d+\] )?(.+) - The KMPlayer
+			^(?:The )?KMPlayer|(?:\[\d+/\d+\] )?(.+) - (?:The )?KMPlayer|(.+)
 
 Kodi
 	windows:
