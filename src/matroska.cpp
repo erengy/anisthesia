@@ -1,6 +1,6 @@
 #include <fstream>
 
-#include "matroska.h"
+#include <anisthesia/matroska.hpp>
 
 namespace anisthesia {
 namespace matroska {

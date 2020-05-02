@@ -4,8 +4,8 @@
 #include <windows.h>
 #include <winternl.h>
 
-#include "open_files.h"
-#include "util.h"
+#include <anisthesia/win_open_files.hpp>
+#include <anisthesia/win_util.hpp>
 
 namespace anisthesia {
 namespace win {

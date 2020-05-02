@@ -1,11 +1,11 @@
 #include <regex>
 
-#include "../media.h"
+#include <anisthesia/media.hpp>
 
-#include "open_files.h"
-#include "platform.h"
-#include "ui_automation.h"
-#include "util.h"
+#include <anisthesia/win_open_files.hpp>
+#include <anisthesia/win_platform.hpp>
+#include <anisthesia/win_ui_automation.hpp>
+#include <anisthesia/win_util.hpp>
 
 namespace anisthesia {
 namespace win {

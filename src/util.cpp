@@ -2,7 +2,7 @@
 #include <fstream>
 #include <string>
 
-#include "util.h"
+#include <anisthesia/util.hpp>
 
 namespace anisthesia {
 namespace util {

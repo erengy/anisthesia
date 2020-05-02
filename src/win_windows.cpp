@@ -3,9 +3,9 @@
 
 #include <windows.h>
 
-#include "platform.h"
-#include "util.h"
-#include "windows.h"
+#include <anisthesia/win_platform.hpp>
+#include <anisthesia/win_util.hpp>
+#include <anisthesia/win_windows.hpp>
 
 namespace anisthesia {
 namespace win {

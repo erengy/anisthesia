@@ -5,8 +5,8 @@
 #include <windows.h>
 #include <uiautomation.h>
 
-#include "ui_automation.h"
-#include "util.h"
+#include <anisthesia/win_ui_automation.hpp>
+#include <anisthesia/win_util.hpp>
 
 namespace anisthesia {
 namespace win {

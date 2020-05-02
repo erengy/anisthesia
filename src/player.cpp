@@ -3,8 +3,8 @@
 #include <string>
 #include <vector>
 
-#include "player.h"
-#include "util.h"
+#include <anisthesia/player.hpp>
+#include <anisthesia/util.hpp>
 
 namespace anisthesia {
 namespace parser {

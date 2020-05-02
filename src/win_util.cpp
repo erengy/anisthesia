@@ -2,7 +2,7 @@
 
 #include <windows.h>
 
-#include "util.h"
+#include <anisthesia/win_util.hpp>
 
 namespace anisthesia {
 namespace win {
