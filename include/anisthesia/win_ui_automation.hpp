@@ -3,8 +3,7 @@
 
 #include <windows.h>
 
-namespace anisthesia {
-namespace win {
+namespace anisthesia::win::detail {
 
 enum class WebBrowserInformationType {
   Address,
@@ -21,5 +20,4 @@ using web_browser_proc_t = std::function<void(const WebBrowserInformation&)>;
 
 bool GetWebBrowserInformation(HWND hwnd, web_browser_proc_t web_browser_proc);
 
-}  // namespace win
-}  // namespace anisthesia
+}  // namespace anisthesia::win::detail

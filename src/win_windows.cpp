@@ -7,8 +7,7 @@
 #include <anisthesia/win_util.hpp>
 #include <anisthesia/win_windows.hpp>
 
-namespace anisthesia {
-namespace win {
+namespace anisthesia::win::detail {
 
 std::wstring GetWindowClassName(HWND hwnd) {
   // The maximum size for lpszClassName, according to the documentation of
@@ -166,5 +165,4 @@ bool EnumerateWindows(window_proc_t window_proc) {
   return ::EnumWindows(EnumWindowsProc, param) != FALSE;
 }
 
-}  // namespace win
-}  // namespace anisthesia
+}  // namespace anisthesia::win::detail

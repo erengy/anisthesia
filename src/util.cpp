@@ -4,8 +4,7 @@
 
 #include <anisthesia/util.hpp>
 
-namespace anisthesia {
-namespace util {
+namespace anisthesia::detail::util {
 
 bool ReadFile(const std::string& path, std::string& data) {
   std::ifstream file(path.c_str(), std::ios::in | std::ios::binary);
@@ -72,5 +71,4 @@ bool TrimRight(std::string& str, const char* chars) {
   return true;
 }
 
-}  // namespace util
-}  // namespace anisthesia
+}  // namespace anisthesia::detail::util

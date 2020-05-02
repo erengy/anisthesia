@@ -5,13 +5,13 @@
 #include <string>
 #include <vector>
 
-namespace anisthesia {
-namespace matroska {
-
 // Specifications for Matroska media containers:
 // https://www.matroska.org/technical/specs/index.html
 
-using duration_t = std::chrono::duration<float, std::milli>;
+namespace anisthesia::matroska {
+
+namespace detail {
+
 using timecode_scale_t = std::chrono::duration<float, std::nano>;
 constexpr uint32_t kDefaultTimecodeScale = 1000000;  // 1 milliseconds
 
@@ -55,6 +55,10 @@ private:
   size_t pos_ = 0;
 };
 
+}  // namespace detail
+
+using duration_t = std::chrono::duration<float, std::milli>;
+
 struct Info {
   duration_t duration = duration_t::zero();
   std::string title;
@@ -63,5 +67,4 @@ struct Info {
 
 bool ReadInfoFromFile(const std::string& path, Info& info);
 
-}  // namespace matroska
-}  // namespace anisthesia
+}  // namespace anisthesia::matroska

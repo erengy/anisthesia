@@ -8,8 +8,7 @@
 #include <anisthesia/win_ui_automation.hpp>
 #include <anisthesia/win_util.hpp>
 
-namespace anisthesia {
-namespace win {
+namespace anisthesia::win::detail {
 
 // Windows Automation API reference:
 // https://msdn.microsoft.com/en-us/library/windows/desktop/ff486375.aspx
@@ -242,5 +241,4 @@ bool GetWebBrowserInformation(HWND hwnd, web_browser_proc_t web_browser_proc) {
   return true;
 }
 
-}  // namespace win
-}  // namespace anisthesia
+}  // namespace anisthesia::win::detail

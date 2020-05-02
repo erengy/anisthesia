@@ -7,8 +7,7 @@
 #include <anisthesia/win_ui_automation.hpp>
 #include <anisthesia/win_util.hpp>
 
-namespace anisthesia {
-namespace win {
+namespace anisthesia::win::detail {
 
 class Strategist {
 public:
@@ -158,5 +157,4 @@ bool Strategist::AddMedia(const MediaInformation media_information) {
   return true;
 }
 
-}  // namespace win
-}  // namespace anisthesia
+}  // namespace anisthesia::win::detail

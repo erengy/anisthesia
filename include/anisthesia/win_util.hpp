@@ -6,8 +6,7 @@
 
 #include <windows.h>
 
-namespace anisthesia {
-namespace win {
+namespace anisthesia::win::detail {
 
 struct HandleDeleter {
   using pointer = HANDLE;
@@ -37,5 +36,4 @@ bool IsSystemDirectory(const std::wstring& path);
 
 std::string ToUtf8String(const std::wstring& str);
 
-}  // namespace win
-}  // namespace anisthesia
+}  // namespace anisthesia::win::detail

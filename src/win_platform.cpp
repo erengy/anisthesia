@@ -10,17 +10,18 @@
 #include <anisthesia/win_util.hpp>
 #include <anisthesia/win_windows.hpp>
 
-namespace anisthesia {
-namespace win {
+namespace anisthesia::win {
+
+namespace detail {
 
 bool IsPlayerWindow(const Process& process, const Window& window,
-                    const Player& player) {
+  const Player& player) {
   auto check_pattern = [](const std::string& pattern, const std::string& str) {
     if (pattern.empty())
       return false;
     if (pattern.front() == '^' && std::regex_match(str, std::regex(pattern)))
       return true;
-    return util::EqualStrings(pattern, str);
+    return anisthesia::detail::util::EqualStrings(pattern, str);
   };
 
   auto check_windows = [&]() {
@@ -42,13 +43,15 @@ bool IsPlayerWindow(const Process& process, const Window& window,
   return check_windows() && check_executables();
 }
 
+}  // namespace detail
+
 ////////////////////////////////////////////////////////////////////////////////
 
 bool GetResults(const std::vector<Player>& players, media_proc_t media_proc,
                 std::vector<Result>& results) {
   auto window_proc = [&](const Process& process, const Window& window) -> bool {
     for (const auto& player : players) {
-      if (IsPlayerWindow(process, window, player)) {
+      if (detail::IsPlayerWindow(process, window, player)) {
         results.push_back({player, process, window, {}});
         break;
       }
@@ -56,14 +59,13 @@ bool GetResults(const std::vector<Player>& players, media_proc_t media_proc,
     return true;
   };
 
-  if (!EnumerateWindows(window_proc))
+  if (!detail::EnumerateWindows(window_proc))
     return false;
 
-  if (!ApplyStrategies(media_proc, results))
+  if (!detail::ApplyStrategies(media_proc, results))
     return false;
 
   return true;
 }
 
-}  // namespace win
-}  // namespace anisthesia
+}  // namespace anisthesia::win

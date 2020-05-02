@@ -6,8 +6,7 @@
 
 #include <windows.h>
 
-namespace anisthesia {
-namespace win {
+namespace anisthesia::win::detail {
 
 struct OpenFile {
   DWORD process_id;
@@ -19,5 +18,4 @@ using open_file_proc_t = std::function<bool(const OpenFile&)>;
 bool EnumerateOpenFiles(const std::set<DWORD>& process_ids,
                         open_file_proc_t open_file_proc);
 
-}  // namespace win
-}  // namespace anisthesia
+}  // namespace anisthesia::win::detail

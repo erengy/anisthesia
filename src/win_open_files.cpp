@@ -7,8 +7,7 @@
 #include <anisthesia/win_open_files.hpp>
 #include <anisthesia/win_util.hpp>
 
-namespace anisthesia {
-namespace win {
+namespace anisthesia::win::detail {
 
 // WARNING: This file uses internal Windows APIs. The functions and structures
 // that are defined here and in <winternl.h> are subject to change.
@@ -104,7 +103,7 @@ buffer_t QuerySystemInformation(
 
   do {
     ULONG return_length = 0;
-    status = win::NtQuerySystemInformation(
+    status = win::detail::NtQuerySystemInformation(
         system_information_class, buffer.get(), size, &return_length);
     if (status == STATUS_INFO_LENGTH_MISMATCH) {
       size = (return_length > size) ? return_length : (size * 2);
@@ -125,8 +124,8 @@ buffer_t QueryObject(HANDLE handle,
   ULONG return_length = 0;
 
   const auto query_object = [&]() {
-    return win::NtQueryObject(handle, object_information_class,
-                              buffer.get(), size, &return_length);
+    return win::detail::NtQueryObject(handle, object_information_class,
+                                      buffer.get(), size, &return_length);
   };
 
   auto status = query_object();
@@ -379,5 +378,4 @@ bool EnumerateOpenFiles(const std::set<DWORD>& process_ids,
   return true;
 }
 
-}  // namespace win
-}  // namespace anisthesia
+}  // namespace anisthesia::win::detail

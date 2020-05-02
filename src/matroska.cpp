@@ -2,8 +2,9 @@
 
 #include <anisthesia/matroska.hpp>
 
-namespace anisthesia {
-namespace matroska {
+namespace anisthesia::matroska {
+
+namespace detail {
 
 Buffer::Buffer(size_t size) {
   data_.resize(size, '\0');
@@ -76,9 +77,13 @@ std::string Buffer::read_string(const size_t size) {
   return result;
 }
 
+}  // namespace detail
+
 ////////////////////////////////////////////////////////////////////////////////
 
 bool ReadInfoFromFile(const std::string& path, Info& info) {
+  using namespace detail;
+
   std::ifstream file(path.c_str(), std::ios::in | std::ios::binary);
   if (!file)
     return false;
@@ -152,5 +157,4 @@ bool ReadInfoFromFile(const std::string& path, Info& info) {
   return true;
 }
 
-}  // namespace matroska
-}  // namespace anisthesia
+}  // namespace anisthesia::matroska

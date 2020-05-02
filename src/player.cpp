@@ -7,7 +7,8 @@
 #include <anisthesia/util.hpp>
 
 namespace anisthesia {
-namespace parser {
+
+namespace detail::parser {
 
 enum class State {
   ExpectPlayerName,
@@ -150,7 +151,7 @@ bool HandleState(std::string& line, std::vector<Player>& players, State& state) 
   return true;
 }
 
-}  // namespace parser
+}  // namespace detail::parser
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -161,24 +162,24 @@ bool ParsePlayersData(const std::string& data, std::vector<Player>& players) {
   std::istringstream stream(data);
   std::string line;
   size_t indentation = 0;
-  parser::State state = parser::State::ExpectPlayerName;
+  auto state = detail::parser::State::ExpectPlayerName;
 
   while (std::getline(stream, line, '\n')) {
     if (line.empty())
       continue;  // Ignore empty lines
 
-    indentation = parser::GetIndentation(line);
+    indentation = detail::parser::GetIndentation(line);
 
-    util::TrimLeft(line, "\t");
-    util::TrimRight(line, "\n\r");
+    detail::util::TrimLeft(line, "\t");
+    detail::util::TrimRight(line, "\n\r");
 
     if (line.empty() || line.front() == '#')
       continue;  // Ignore empty lines and comments
 
-    if (!parser::HandleIndentation(indentation, players, state))
+    if (!detail::parser::HandleIndentation(indentation, players, state))
       return false;
 
-    if (!parser::HandleState(line, players, state))
+    if (!detail::parser::HandleState(line, players, state))
       return false;
   }
 
@@ -188,7 +189,7 @@ bool ParsePlayersData(const std::string& data, std::vector<Player>& players) {
 bool ParsePlayersFile(const std::string& path, std::vector<Player>& players) {
   std::string data;
 
-  if (!util::ReadFile(path, data))
+  if (!detail::util::ReadFile(path, data))
     return false;
 
   return ParsePlayersData(data, players);

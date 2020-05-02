@@ -8,8 +8,7 @@
 #include <anisthesia/media.hpp>
 #include <anisthesia/player.hpp>
 
-namespace anisthesia {
-namespace win {
+namespace anisthesia::win {
 
 struct Process {
   DWORD id = 0;
@@ -29,10 +28,13 @@ struct Result {
   std::vector<Media> media;
 };
 
-bool ApplyStrategies(media_proc_t media_proc, std::vector<Result>& results);
-
 bool GetResults(const std::vector<Player>& players, media_proc_t media_proc,
                 std::vector<Result>& results);
 
-}  // namespace win
-}  // namespace anisthesia
+namespace detail {
+
+bool ApplyStrategies(media_proc_t media_proc, std::vector<Result>& results);
+
+}  // namespace detail
+
+}  // namespace anisthesia::win

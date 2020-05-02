@@ -4,8 +4,7 @@
 
 #include <anisthesia/win_util.hpp>
 
-namespace anisthesia {
-namespace win {
+namespace anisthesia::win::detail {
 
 std::wstring GetFileNameFromPath(const std::wstring& path) {
   const auto pos = path.find_last_of(L"/\\");
@@ -42,5 +41,4 @@ std::string ToUtf8String(const std::wstring& str) {
   return std::string();
 }
 
-}  // namespace win
-}  // namespace anisthesia
+}  // namespace anisthesia::win::detail
