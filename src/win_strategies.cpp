@@ -17,7 +17,7 @@ public:
   bool ApplyStrategies();
 
 private:
-  bool AddMedia(const MediaInformation media_information);
+  bool AddMedia(const MediaInfo media_information);
 
   bool ApplyWindowTitleStrategy();
   bool ApplyOpenFilesStrategy();
@@ -87,14 +87,14 @@ bool ApplyWindowTitleFormat(const std::string& format, std::string& title) {
   return false;
 }
 
-MediaInformationType InferMediaInformationType(const std::string& str) {
+MediaInfoType InferMediaInformationType(const std::string& str) {
   static const std::regex path_pattern(
       R"(^(?:[A-Za-z]:[/\\]|\\\\)[^<>:"/\\|?*]+)");
   if (std::regex_search(str, path_pattern)) {
-    return MediaInformationType::File;
+    return MediaInfoType::File;
   }
 
-  return MediaInformationType::Unknown;
+  return MediaInfoType::Unknown;
 }
 
 bool Strategist::ApplyWindowTitleStrategy() {
@@ -108,8 +108,7 @@ bool Strategist::ApplyOpenFilesStrategy() {
   bool success = false;
 
   auto open_files_proc = [this, &success](const OpenFile& open_file) -> bool {
-    success |= AddMedia(
-        {MediaInformationType::File, ToUtf8String(open_file.path)});
+    success |= AddMedia({MediaInfoType::File, ToUtf8String(open_file.path)});
     return true;
   };
 
@@ -126,14 +125,14 @@ bool Strategist::ApplyUiAutomationStrategy() {
 
     switch (web_browser_information.type) {
       case WebBrowserInformationType::Address:
-        AddMedia({MediaInformationType::Url, value});
+        AddMedia({MediaInfoType::Url, value});
         break;
       case WebBrowserInformationType::Title:
         ApplyWindowTitleFormat(result_.player.window_title_format, value);
-        AddMedia({MediaInformationType::Title, value});
+        AddMedia({MediaInfoType::Title, value});
         break;
       case WebBrowserInformationType::Tab:
-        AddMedia({MediaInformationType::Tab, value});
+        AddMedia({MediaInfoType::Tab, value});
         break;
     }
   };
@@ -143,7 +142,7 @@ bool Strategist::ApplyUiAutomationStrategy() {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool Strategist::AddMedia(const MediaInformation media_information) {
+bool Strategist::AddMedia(const MediaInfo media_information) {
   if (media_information.value.empty())
     return false;
 

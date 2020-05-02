@@ -9,7 +9,7 @@ namespace anisthesia {
 
 using media_time_t = std::chrono::milliseconds;
 
-enum class MediaInformationType {
+enum class MediaInfoType {
   Unknown,
   File,
   Tab,
@@ -24,18 +24,18 @@ enum class MediaState {
   Stopped,
 };
 
-struct MediaInformation {
-  MediaInformationType type = MediaInformationType::Unknown;
+struct MediaInfo {
+  MediaInfoType type = MediaInfoType::Unknown;
   std::string value;
 };
 
 struct Media {
-  MediaState state = MediaState::Unknown;
-  media_time_t duration;
-  media_time_t position;
-  std::vector<MediaInformation> information;
+  MediaState state = MediaState::Unknown;  // currently unused
+  media_time_t duration;                   // currently unused
+  media_time_t position;                   // currently unused
+  std::vector<MediaInfo> information;
 };
 
-using media_proc_t = std::function<bool(const MediaInformation&)>;
+using media_proc_t = std::function<bool(const MediaInfo&)>;
 
 }  // namespace anisthesia
