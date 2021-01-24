@@ -334,9 +334,10 @@ UMPlayer
 
 VLC media player
 	windows:
+		# Qt5QWindowIcon, Qt5151QWindowIcon, etc.
+		^Qt.+QWindowIcon
+		# Older versions
 		QWidget
-		# Nightly builds for version 3.0.0
-		Qt5QWindowIcon
 		# Skinnable interface
 		SkinWindowClass
 	executables:
