@@ -221,6 +221,8 @@ bool VerifyObjectType(HANDLE handle, USHORT object_type_index) {
   //       | 10 1809 (October 2018 Update)
   //    37 | 10 1903 (May 2019 Update)
   //       | 10 1909 (November 2019 Update)
+  //       | 10 2004 (May 2020 Update)
+  //       | 10 20H2 (October 2020 Update)
   //
   // Here we initialize the value with 0, so that it is determined at run time.
   // This is more reliable than hard-coding the values for each OS version.
