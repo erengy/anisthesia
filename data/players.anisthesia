@@ -157,7 +157,7 @@ Media Player Classic
 
 Media Player Classic Qute Theater
 	windows:
-		Qt5QWindowIcon
+		^Qt.+QWindowIcon
 	executables:
 		mpc-qt
 	strategies:
