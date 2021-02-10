@@ -184,9 +184,10 @@ std::wstring GetObjectTypeName(HANDLE handle) {
 std::wstring GetFinalPathNameByHandle(HANDLE handle) {
   std::wstring buffer(MAX_PATH, '\0');
 
-  auto get_final_path_name_by_handle = [&]() {
-    return ::GetFinalPathNameByHandle(handle, &buffer.front(), buffer.size(),
-        FILE_NAME_NORMALIZED | VOLUME_NAME_DOS);
+  const auto get_final_path_name_by_handle = [&]() {
+    return ::GetFinalPathNameByHandle(handle, &buffer.front(),
+                                      static_cast<DWORD>(buffer.size()),
+                                      FILE_NAME_NORMALIZED | VOLUME_NAME_DOS);
   };
 
   auto result = get_final_path_name_by_handle();

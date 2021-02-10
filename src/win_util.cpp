@@ -24,9 +24,10 @@ bool IsSystemDirectory(const std::wstring& path) {
 }
 
 std::string ToUtf8String(const std::wstring& str) {
-  auto wide_char_to_multi_byte = [&str](LPSTR output, int size) -> int {
-    return ::WideCharToMultiByte(CP_UTF8, 0, str.c_str(), str.size(),
-                                 output, size, nullptr, nullptr);
+  const auto wide_char_to_multi_byte = [&str](LPSTR output, int size) -> int {
+    return ::WideCharToMultiByte(CP_UTF8, 0, str.c_str(),
+                                 static_cast<int>(str.size()), output, size,
+                                 nullptr, nullptr);
   };
 
   if (!str.empty()) {
