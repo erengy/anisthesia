@@ -283,7 +283,9 @@ PotPlayer
 
 SMPlayer
 	windows:
-		Qt5QWindowIcon
+		# Qt5QWindowIcon, Qt5152QWindowIcon, etc.
+		^Qt.+QWindowIcon
+		# Older versions
 		QWidget
 	executables:
 		smplayer
