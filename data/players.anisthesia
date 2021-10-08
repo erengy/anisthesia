@@ -93,12 +93,15 @@ DivX Player
 GOM Player
 	windows:
 		GomPlayer1.x
+		GomPlayerPlus32_2.x
+		GomPlayerPlus64_2.x
 	executables:
 		GOM
+		GOM64
 	strategies:
 		open_files
 		window_title:
-			^GOM Player|(.+)\[Subtitle\] - GOM Player|(.+) - GOM Player
+			^GOM Player(?: Plus)|(.+)(?:\[Subtitle\]) - GOM Player(?: Plus)
 
 Kantaris
 	windows:
