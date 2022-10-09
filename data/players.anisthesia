@@ -357,6 +357,20 @@ VLC media player
 		window_title:
 			^VLC media player|(.+) - VLC media player|.+
 
+Plex Media Player
+	windows:
+		# Qt5QWindowIcon, Qt5152QWindowIcon, etc.
+		^Qt.+QWindowIcon
+		# Plex uses Qt
+		QWidget
+		QtWindow
+		QtWebEngineProcess
+	executables:
+		Plex
+	strategies:
+		open_files
+
+
 WebTorrent Desktop
 	windows:
 		Chrome_WidgetWin_1
