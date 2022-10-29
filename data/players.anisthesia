@@ -455,7 +455,7 @@ Mozilla Firefox
 	strategies:
 		ui_automation
 		window_title:
-			^(?:Mozilla Firefox|Firefox Developer Edition)|(.+) - (?:Mozilla Firefox|Firefox Developer Edition)(?: \(Private Browsing\))?
+			^(?:Mozilla Firefox|Firefox Developer Edition)|(.+) (?:-|—) (?:Mozilla Firefox|Firefox Developer Edition)(?: \(Private Browsing\))?
 	type:
 		web_browser
 
