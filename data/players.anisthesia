@@ -442,7 +442,7 @@ Microsoft Edge
 	strategies:
 		ui_automation
 		window_title:
-			^(.+) and \d+ more pages? - .+|(.+) - [^-]+ - Microsoft Edge|(.+)
+			^(.+) and \d+ more pages? - .+|(.+) - [^-]+ - Microsoft.*Edge|(.+)
 	type:
 		web_browser
 
