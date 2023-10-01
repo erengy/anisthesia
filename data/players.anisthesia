@@ -172,6 +172,16 @@ Media Player Classic Qute Theater
 		window_title:
 			^Media Player Classic Qute Theater|Media Player Classic Qute Theater - (.+)|.+
 
+Memento
+	windows:
+		^Qt.+QWindowIcon
+	executables:
+		memento
+	strategies:
+		open_files
+		window_title:
+			^Memento|(.+) - Memento
+
 Miro
 	windows:
 		gdkWindowToplevel
