@@ -444,6 +444,18 @@ Internet Explorer
 	type:
 		web_browser
 
+LibreWolf
+	windows:
+		MozillaWindowClass
+	executables:
+		librewolf
+	strategies:
+		ui_automation
+		window_title:
+			^(.+) (?:-|—) LibreWolf(?: Private Browsing)?
+	type:
+		web_browser
+
 Microsoft Edge
 	windows:
 		Chrome_WidgetWin_1
