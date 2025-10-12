@@ -5,6 +5,7 @@
 #include <type_traits>
 
 #include <windows.h>
+#include <unknwn.h>
 
 namespace anisthesia::win::detail {
 

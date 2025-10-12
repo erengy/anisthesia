@@ -3,6 +3,7 @@
 #include <vector>
 
 #include <windows.h>
+#include <unknwn.h>
 #include <uiautomation.h>
 
 #include <anisthesia/win_ui_automation.hpp>
