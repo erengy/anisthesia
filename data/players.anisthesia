@@ -103,6 +103,18 @@ GOM Player
 		window_title:
 			^GOM Player(?: Plus)|(.+)(?:\[Subtitle\]) - GOM Player(?: Plus)
 
+ImPlay
+	windows:
+		GLFW30
+	executables:
+		ImPlay
+	strategies:
+		open_files
+		# May be in an unexpected format if "--title" option is used. Ideally, it
+		# should return only "${filename}", "${path}" or "${media-title}".
+		window_title:
+			^.*ImPlay|(.+)
+
 Kantaris
 	windows:
 		^WindowsForms10\.Window\.20008\.app\..+
