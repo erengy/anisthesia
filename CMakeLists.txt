@@ -22,9 +22,14 @@ target_sources(anisthesia INTERFACE
 )
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+	target_link_libraries(anisthesia INTERFACE
+		windowsapp.lib
+	)
+
 	target_sources(anisthesia INTERFACE
 		src/win_open_files.cpp
 		src/win_platform.cpp
+		src/win_smtc.cpp
 		src/win_strategies.cpp
 		src/win_ui_automation.cpp
 		src/win_util.cpp

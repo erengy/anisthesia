@@ -4,6 +4,7 @@
 
 #include <anisthesia/win_open_files.hpp>
 #include <anisthesia/win_platform.hpp>
+#include <anisthesia/win_smtc.hpp>
 #include <anisthesia/win_ui_automation.hpp>
 #include <anisthesia/win_util.hpp>
 
@@ -22,6 +23,7 @@ private:
   bool ApplyWindowTitleStrategy();
   bool ApplyOpenFilesStrategy();
   bool ApplyUiAutomationStrategy();
+  bool ApplyMediaControlStrategy();
 
   media_proc_t media_proc_;
   Result& result_;
@@ -42,6 +44,9 @@ bool Strategist::ApplyStrategies() {
         break;
       case Strategy::UiAutomation:
         success |= ApplyUiAutomationStrategy();
+        break;
+      case Strategy::MediaControl:
+        success |= ApplyMediaControlStrategy();
         break;
     }
   }
@@ -138,6 +143,18 @@ bool Strategist::ApplyUiAutomationStrategy() {
   };
 
   return GetWebBrowserInformation(result_.window.handle, web_browser_proc);
+}
+
+bool Strategist::ApplyMediaControlStrategy() {
+  Media media;
+  
+  if (!GetMediaFromSMTC(media)) {
+    return false;
+  }
+
+  result_.media.push_back(media);
+
+  return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

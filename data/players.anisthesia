@@ -249,6 +249,7 @@ mpv
 	executables:
 		mpv
 	strategies:
+		media_control
 		open_files
 		# May be in an unexpected format if "--title" option is used. Ideally, it
 		# should return only "${filename}", "${path}" or "${media-title}".

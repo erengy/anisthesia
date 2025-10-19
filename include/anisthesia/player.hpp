@@ -9,6 +9,7 @@ enum class Strategy {
   WindowTitle,
   OpenFiles,
   UiAutomation,
+  MediaControl,
 };
 
 enum class PlayerType {

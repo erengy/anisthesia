@@ -26,7 +26,7 @@ contexts:
       scope: markup.heading.player.anisthesia
 
   strategies:
-    - match: ^\t+(open_files|ui_automation|window_title):?\n
+    - match: ^\t+(media_control|open_files|ui_automation|window_title):?\n
       scope: constant.strategy.anisthesia
 
   type:

@@ -115,6 +115,7 @@ bool HandleState(std::string& line, std::vector<Player>& players, State& state) 
         {"window_title", Strategy::WindowTitle},
         {"open_files", Strategy::OpenFiles},
         {"ui_automation", Strategy::UiAutomation},
+        {"media_control", Strategy::MediaControl},
       };
       util::TrimRight(line, ":");
       const auto it = strategies.find(line);
