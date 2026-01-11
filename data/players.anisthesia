@@ -174,7 +174,7 @@ Media Player Classic Qute Theater
 
 Memento
 	windows:
-		^Qt.+QWindowIcon
+		^Qt.+QWindow(OwnDC)?Icon
 	executables:
 		memento
 	strategies:
