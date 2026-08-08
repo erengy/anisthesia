@@ -180,6 +180,7 @@ bool FindWebBrowserElements(Element& parent, std::wstring& address,
         // than using FindFirst and FindAll methods.
         return TreeScope_Element;
 
+      case UIA_ComboBoxControlTypeId:
       case UIA_EditControlTypeId:
         // Here we assume that the first edit control that fits our properties
         // is the address bar (e.g. "Omnibox" on Chrome, "Awesome Bar" on
