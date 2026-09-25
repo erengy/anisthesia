@@ -30,4 +30,11 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 		src/win_util.cpp
 		src/win_windows.cpp
 	)
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+	target_sources(anisthesia INTERFACE
+		src/lin_open_files.cpp
+		src/lin_platform.cpp
+		src/lin_processes.cpp
+		src/lin_strategies.cpp
+	)
 endif()

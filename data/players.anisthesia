@@ -80,6 +80,14 @@ BS.Player
 	strategies:
 		open_files
 
+# Celluloid is a GTK front end for mpv and has no Windows build, so there is no window class
+# to match and no window title format to rely on.
+Celluloid
+	executables:
+		celluloid
+	strategies:
+		open_files
+
 DivX Player
 	windows:
 		Qt5QWindowIcon
@@ -430,6 +438,18 @@ Brave Browser
 	type:
 		web_browser
 
+Chromium
+	windows:
+		Chrome_WidgetWin_1
+	executables:
+		chromium
+	strategies:
+		ui_automation
+		window_title:
+			^(.+) \(Incognito\)(?: - Chromium)?|(.+) - Chromium|(.+)
+	type:
+		web_browser
+
 Google Chrome
 	windows:
 		Chrome_WidgetWin_1
@@ -500,6 +520,19 @@ Opera
 		ui_automation
 		window_title:
 			^(.+) - Opera(?: \(Private\))?
+	type:
+		web_browser
+
+Vivaldi
+	windows:
+		Chrome_WidgetWin_1
+	executables:
+		vivaldi
+		vivaldi-bin
+	strategies:
+		ui_automation
+		window_title:
+			^(.+) - Vivaldi
 	type:
 		web_browser
 
